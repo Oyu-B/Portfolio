@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import AgenticFactory3D from '@/components/ui/agentic-factory-3d'
 import './App.css'
 
@@ -78,8 +78,11 @@ const categoryKeys = ['Web development', 'Networking', 'Quality management']
 function App() {
   const [filter, setFilter] = useState('All work')
   const [selected, setSelected] = useState(null)
+  const [stationIndex, setStationIndex] = useState(null)
   const [language, setLanguage] = useState(() => localStorage.getItem('portfolio-language') || 'en')
   const [theme, setTheme] = useState(() => localStorage.getItem('portfolio-theme') || 'dark')
+  const tourTimer = useRef(null)
+  const stationOrder = ['engine', 'admin', 'storefront', 'cabinet', 'cashdesk']
   const t = content[language] || content.en
   const visibleProjects = useMemo(() => t.projects.filter((project, index) => filter === 'All work' || categoryKeys[index] === filter), [filter, t.projects])
 
@@ -94,11 +97,40 @@ function App() {
     cashdesk: { id: 'cashdesk', title: t.stationContact, type: t.stationTypes[4], detail: t.stationDetails[4], stack: [contactEmail] },
   }
 
+  function openStation(id) {
+    const index = stationOrder.indexOf(id)
+    if (index < 0) return
+    window.clearTimeout(tourTimer.current)
+    setStationIndex(index)
+    setSelected(stationDetails[id])
+  }
+
+  function continueTour() {
+    if (stationIndex === null) return
+    const nextIndex = stationIndex + 1
+    const nextId = stationOrder[nextIndex]
+    setSelected(null)
+    window.__machine?.setCamera('overview')
+    if (!nextId) {
+      setStationIndex(null)
+      return
+    }
+    tourTimer.current = window.setTimeout(() => {
+      window.__machine?.focusStation(nextId)
+      tourTimer.current = window.setTimeout(() => {
+        setStationIndex(nextIndex)
+        setSelected(stationDetails[nextId])
+      }, 1200)
+    }, 1600)
+  }
+
+  useEffect(() => () => window.clearTimeout(tourTimer.current), [])
+
   return (
     <div className="portfolio-app" data-theme={theme}>
       <main>
         <section id="home" className="factory-shell" aria-label={t.nav[0]}>
-          <AgenticFactory3D height="100vh" language={language} onStation={(id) => setSelected(stationDetails[id])} />
+          <AgenticFactory3D height="100vh" language={language} onStation={openStation} />
           <div className="hero-welcome">
             <p className="eyebrow">{language === 'mn' ? 'САЙН УУ / HELLO' : 'HELLO / САЙН УУ'}</p>
             <h1>{language === 'mn' ? <>Сайн уу,<br />би Кожи. <span>Миний портфолиод тавтай морил!</span></> : <>Hello,<br />I'm Koji. <span>Welcome to my portfolio.</span></>}</h1>
@@ -164,12 +196,14 @@ function App() {
 
       <footer className="site-footer"><span>© 2026 KOJI</span><span>{t.footerLine}</span><a href="#home">{t.footerBack} ↑</a></footer>
 
-      {selected && <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelected(null) }}>
-        <section className="project-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-          <button className="modal-close" type="button" aria-label={t.close} onClick={() => setSelected(null)}>×</button>
+      {selected && <div className={`modal-backdrop${stationIndex !== null ? ' station-backdrop' : ''}`} role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) { setSelected(null); if (stationIndex !== null) { setStationIndex(null); window.__machine?.setCamera('overview') } } }}>
+        <section className={`project-modal${stationIndex !== null ? ' station-page' : ''}`} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+          <button className="modal-close" type="button" aria-label={t.close} onClick={() => { setSelected(null); setStationIndex(null); window.__machine?.setCamera('overview') }}>×</button>
+          {stationIndex !== null && <p className="station-page-count">0{stationIndex + 1} <span>/ 05</span></p>}
           <p className="eyebrow">{selected.type || 'PORTFOLIO STATION'}</p><h2 id="modal-title">{selected.title}</h2><p>{selected.detail}</p>
           <div className="modal-stack">{(selected.stack || []).map((tech) => <span className="skill-chip" key={tech}>{tech}</span>)}</div>
-          {selected.id === 'cashdesk' ? <a className="text-link" href={`mailto:${contactEmail}`}>{t.modalEmail} <span>↗</span></a> : <a className="text-link" href="#work" onClick={() => setSelected(null)}>{t.modalBrowse} <span>↗</span></a>}
+          {stationIndex !== null && <button className="button button-primary station-continue" type="button" onClick={continueTour}>{stationIndex === stationOrder.length - 1 ? (language === 'mn' ? 'Аяллыг дуусгах' : 'Finish tour') : (language === 'mn' ? 'Үргэлжлүүлэх' : 'Continue')} <span>→</span></button>}
+          {stationIndex === null && (selected.id === 'cashdesk' ? <a className="text-link" href={`mailto:${contactEmail}`}>{t.modalEmail} <span>&#8599;</span></a> : <a className="text-link" href="#work" onClick={() => setSelected(null)}>{t.modalBrowse} <span>&#8599;</span></a>)}
         </section>
       </div>}
     </div>
