@@ -128,7 +128,7 @@ function App() {
       title: t.stationIntro,
       type: t.stationTypes[0],
       detail: t.stationDetails[0],
-      stack: ['Information systems', 'Portfolio 2026'],
+      stack: language === 'mn' ? ['Мэдээллийн систем', 'СЭЗИС'] : ['Information systems', 'UFE'],
       image: profileImage,
       imageAlt: language === 'mn' ? 'Оюу мэндчилж буй зураг' : 'Oyu waving hello',
     },
@@ -236,7 +236,22 @@ function App() {
           <div className="section-heading"><p className="eyebrow">{t.aboutEyebrow}</p><span className="heading-rule" /></div>
           <div className="about-layout">
             <h2 id="about-title">{t.aboutTitle}</h2>
-            <div className="about-text"><p>{t.aboutP1}</p><p>{t.aboutP2}</p><p className="education-note">{t.education}</p><div className="achievement-list"><h3>{t.achievementsTitle}</h3><ul>{t.achievements.map((achievement) => <li key={achievement}>{achievement}</li>)}</ul></div><a className="text-link" href="#work">{t.explore} <span>&#8599;</span></a></div>
+            <div className="about-text">
+              <p>{t.aboutP1}</p>
+              <div className="about-info-block">
+                <h3>{language === 'mn' ? 'Миний давуу тал' : 'My strengths'}</h3>
+                <p>{t.aboutP2}</p>
+              </div>
+              <div className="about-info-block education-note">
+                <h3>{language === 'mn' ? 'Боловсрол' : 'Education'}</h3>
+                <p>{t.education.replace(/^(Боловсрол: |Education: )/, '')}</p>
+              </div>
+              <div className="achievement-list">
+                <h3>{t.achievementsTitle}</h3>
+                <ul>{t.achievements.map((achievement) => <li key={achievement}>{achievement}</li>)}</ul>
+              </div>
+              <a className="text-link" href="#work">{t.explore} <span>&#8599;</span></a>
+            </div>
           </div>
         </section>
 
@@ -334,7 +349,14 @@ function App() {
               {stationIndex !== null && <p className="station-page-count">0{stationIndex + 1} <span>/ 05</span></p>}
               <p className="eyebrow">{selected.type || 'PORTFOLIO STATION'}</p>
               {selected.image && <img className="station-profile-image" src={selected.image} alt={selected.imageAlt} />}
-              <h2 id="modal-title">{selected.title}</h2><p>{selected.detail}</p>
+              <h2 id="modal-title">{selected.title}</h2>
+              {stationIndex === 0 ? (
+                <div className="station-profile-info">
+                  <div><span>{language === 'mn' ? 'НЭР' : 'NAME'}</span><strong>{language === 'mn' ? 'Балбаатар Оюу' : 'Oyu Balbaatar'}</strong></div>
+                  <div><span>{language === 'mn' ? 'СУРАЛЦАЖ БУЙ ГАЗАР' : 'UNIVERSITY'}</span><strong>{language === 'mn' ? 'Санхүү, эдийн засгийн их сургууль' : 'University of Finance and Economics'}</strong></div>
+                  <div><span>{language === 'mn' ? 'ХӨТӨЛБӨР' : 'PROGRAM'}</span><strong>{language === 'mn' ? 'Мэдээллийн системийн менежмент' : 'Information Systems Management'}</strong></div>
+                </div>
+              ) : <p>{selected.detail}</p>}
               <div className="modal-stack">{(selected.stack || []).map((tech) => <span className="skill-chip" key={tech}>{tech}</span>)}</div>
               {selected.github && <a className="text-link project-source-link" href={selected.github} target="_blank" rel="noreferrer">GitHub <span>&#8599;</span></a>}
               {stationIndex !== null && <button className="button button-primary station-continue" type="button" onClick={continueTour}>{stationIndex === stationOrder.length - 1 ? 'Finish tour' : 'Continue'} <span>→</span></button>}

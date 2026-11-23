@@ -5,7 +5,8 @@ export const content = {
     aboutEyebrow: '01 / ABOUT ME', aboutTitle: <>Balbaatar<br /><span>Oyu</span>.</>,
     aboutP1: 'I am an Information Systems Management student at the University of Finance and Economics. I hope to grow in systems analysis and am responsible, careful, and quick to learn.',
     aboutP2: 'Mathematics is one of my strengths. I enjoy solving problems and working accurately with calculations and numerical data, then presenting information in a clear and useful way.',
-    education: 'Education: School No. 1, Govi-Altai (2012–2024) · BSc in Information Systems Management, University of Finance and Economics (2024–present).',
+    strengthsTitle: 'Strengths', educationTitle: 'Education',
+    education: 'School No. 1, Govi-Altai (2012-2024) · BSc in Information Systems Management, University of Finance and Economics (2024-present).',
     achievementsTitle: 'Achievements',
     achievements: [
       'Selected as one of the “Top 7 Works” at the Statistics-2026 Student Research Conference organized by the UFE Department of Basic Sciences; successfully presented my research in the oral presentation round.',
