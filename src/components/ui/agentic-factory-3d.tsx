@@ -608,7 +608,7 @@ function initMachineScene(
         step: 3,
         output: isMn ? 'чадвар' : 'skills',
         pos: [1.5, 0.29, -2.08],
-        desc: isMn ? 'C, SQL, Java, Office, Figma болон VS Code.' : 'C, SQL, Java, office tools, Figma and VS Code.'
+        desc: isMn ? 'C, SQL, Java, Office and VS Code.' : 'C, SQL, Java, office tools, VS Code.'
       },
       {
         id: 'cabinet',
@@ -689,7 +689,7 @@ function initMachineScene(
       screen(group, 1.54, 0.345, 0, 0.27, 0.891, plaque)
       const label = document.createElement('div')
       label.className = 'station-label'
-      label.innerHTML = `<div class="stem"></div><div class="label-card"><div class="label-title"><span>${String(i + 1).padStart(2, '0')}</span>${d.name}</div><div class="label-meta">Step ${d.step} / ${d.output}</div></div>`
+      label.innerHTML = `<div class="stem"></div><div class="label-card"><div class="label-title"><span>${String(i + 1).padStart(2, '0')}</span>${d.name}</div><div class="label-meta">${isMn ? 'Алхам' : 'Step'} ${d.step} / ${d.output}</div></div>`
       $('labels').appendChild(label)
       cleanups.push(() => label.remove())
 
@@ -858,7 +858,6 @@ function initMachineScene(
       { name: 'C / SQL', height: 0.82, material: M.amber, tag: 'SQL' },
       { name: 'JAVA', height: 1.05, material: M.ivory, tag: 'JAVA' },
       { name: 'EXCEL', height: 1.25, material: M.body, tag: 'DATA' },
-      { name: 'FIGMA', height: 0.96, material: M.copper, tag: 'UI' },
     ]
     skillItems.forEach((item, i) => {
       const x = -0.66 + i * 0.44

@@ -8,10 +8,6 @@ import {
   contactEmail,
   githubProfile,
   phoneNumber,
-  personalSkillMn,
-  personalSkills,
-  professionalSkillMn,
-  professionalSkills,
   skillMn,
   skills,
   stationOrder,
@@ -82,6 +78,70 @@ function ProjectArtwork({ project, index, language, large = false }) {
       )}
       <span className="project-art-foot"><span>{project.type}</span><span className="art-open">↗</span></span>
     </span>
+  )
+}
+
+function SkillRatingList({ items, language }) {
+  return (
+    <ul className="skill-rating-list">
+      {items.map((skill) => {
+        const isStrong = skill === 'SQL'
+        const value = isStrong ? 90 : 55
+        const level = isStrong
+          ? (language === 'mn' ? 'Маш сайн' : 'Advanced')
+          : (language === 'mn' ? 'Дундаж' : 'Intermediate')
+        return (
+          <li key={skill}>
+            <span className="skill-rating-name">{skill}</span>
+            <div className="skill-rating-track" role="meter" aria-label={skill} aria-valuemin="0" aria-valuemax="100" aria-valuenow={value} aria-valuetext={level}>
+              <span className={isStrong ? 'is-strong' : ''} style={{ width: `${value}%` }} />
+            </div>
+            <span className="skill-rating-level">{level}</span>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+const ratedSkillGroups = {
+  en: [
+    { title: 'Technical skills', items: [['SQL', 90], ['HTML', 70], ['CSS', 65], ['JavaScript', 55], ['Java', 45], ['TypeScript', 40], ['C', 30]] },
+    { title: 'Tools', items: [['Microsoft Excel', 75], ['Microsoft Word', 75], ['VS Code', 70]] },
+    { title: 'Language', items: [['English', 40]] },
+    { title: 'Soft skills', items: [['Mathematical reasoning', 90], ['Quick learner', 85], ['Accurate calculations', 85], ['Responsibility', 80], ['Teamwork', 75], ['Attention to detail', 75], ['Information analysis', 70], ['Communication', 65]] },
+  ],
+  mn: [
+    { title: 'Техникийн ур чадвар', items: [['SQL', 90], ['HTML', 70], ['CSS', 65], ['JavaScript', 55], ['Java', 45], ['TypeScript', 40], ['C', 30]] },
+    { title: 'Хэрэгсэл ашиглах ур чадвар', items: [['Microsoft Excel', 75], ['Microsoft Word', 75], ['VS Code', 70]] },
+    { title: 'Хэлний мэдлэг', items: [['Англи хэл', 40]] },
+    { title: 'Зөөлөн ур чадвар', items: [['Математик сэтгэлгээ', 90], ['Шинэ зүйл хурдан сурах', 85], ['Тооцоолол хийх', 85], ['Хариуцлагатай байх', 80], ['Багаар ажиллах', 75], ['Нягт нямбай байх', 75], ['Мэдээлэлд дүн шинжилгээ хийх', 70], ['Харилцааны чадвар', 65]] },
+  ],
+}
+
+function RatedSkills({ language, className = '', groupIndexes }) {
+  const groups = ratedSkillGroups[language === 'mn' ? 'mn' : 'en']
+  const visibleGroups = groupIndexes ? groupIndexes.map((index) => groups[index]) : groups
+
+  return (
+    <div className={`skill-groups ${className}`.trim()}>
+      {visibleGroups.map((group) => (
+        <section className="skill-group" key={group.title}>
+          <h3>{group.title}</h3>
+          <ul className="skill-rating-list">
+            {group.items.map(([name, value]) => (
+              <li key={name}>
+                <span className="skill-rating-name">{name}</span>
+                <div className="skill-rating-track" role="meter" aria-label={name} aria-valuemin="0" aria-valuemax="100" aria-valuenow={value} aria-valuetext={`${value}%`}>
+                  <span className={value >= 80 ? 'is-strong' : ''} style={{ width: `${value}%` }} />
+                </div>
+                <span className="skill-rating-level">{value}%</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
   )
 }
 
@@ -257,7 +317,16 @@ function App() {
 
         <section className="skills-section section-pad" id="skills" aria-labelledby="skills-title">
           <div className="section-heading"><p className="eyebrow">{t.skillsEyebrow}</p><span className="heading-rule" /></div>
-          <div className="skills-content"><div><p className="eyebrow">{t.tools}</p><h2 id="skills-title">{t.skillsTitle}</h2></div><div className="skills-copy"><p>{t.skillsDescription}</p><div className="skill-groups"><div className="skill-group"><h3>{t.professionalSkillsTitle}</h3><div className="skill-chips">{(language === 'mn' ? professionalSkillMn : professionalSkills).map((skill) => <span className="skill-chip" key={skill}>{skill}</span>)}</div></div><div className="skill-group"><h3>{t.personalSkillsTitle}</h3><div className="skill-chips">{(language === 'mn' ? personalSkillMn : personalSkills).map((skill) => <span className="skill-chip" key={skill}>{skill}</span>)}</div></div></div></div></div>
+          <div className="skills-content">
+            <div className="skills-intro-column">
+              <p className="eyebrow">{t.tools}</p>
+              <h2 id="skills-title">{t.skillsTitle}</h2>
+              <RatedSkills language={language} className="skills-left-group" groupIndexes={[1]} />
+            </div>
+            <div className="skills-copy">
+              <RatedSkills language={language} groupIndexes={[0, 2, 3]} />
+            </div>
+          </div>
         </section>
 
         <section className="work section-pad" id="work" aria-labelledby="work-title">
@@ -309,7 +378,7 @@ function App() {
       <footer className="site-footer"><span>&copy; 2026 {language === 'mn' ? 'ОЮУ' : 'OYU'}</span><span>{t.footerLine}</span><a href="#home">{t.footerBack} &#8593;</a></footer>
 
       {selected && <div className={`modal-backdrop${stationIndex !== null ? ' station-backdrop' : ''}`} role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) { setSelected(null); if (stationIndex !== null) { setStationIndex(null); window.__machine?.setCamera('overview') } } }}>
-        <section className={`project-modal${stationIndex !== null ? ' station-page' : ''}${selected.image ? ' station-page-intro' : ''}${selected.category ? ' project-detail-modal' : ''}`} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <section className={`project-modal${stationIndex !== null ? ' station-page' : ''}${stationIndex === 2 ? ' station-skills-page' : ''}${stationIndex === 3 ? ' station-projects-page' : ''}${selected.image ? ' station-page-intro' : ''}${selected.category ? ' project-detail-modal' : ''}`} role="dialog" aria-modal="true" aria-labelledby="modal-title">
           <button className="modal-close" type="button" aria-label={t.close} onClick={() => { setSelected(null); setStationIndex(null); window.__machine?.setCamera('overview') }}>×</button>
           {selected.category ? (
             <div className="project-detail-layout">
@@ -355,6 +424,48 @@ function App() {
                   <div><span>{language === 'mn' ? 'НЭР' : 'NAME'}</span><strong>{language === 'mn' ? 'Балбаатар Оюу' : 'Oyu Balbaatar'}</strong></div>
                   <div><span>{language === 'mn' ? 'СУРАЛЦАЖ БУЙ ГАЗАР' : 'UNIVERSITY'}</span><strong>{language === 'mn' ? 'Санхүү, эдийн засгийн их сургууль' : 'University of Finance and Economics'}</strong></div>
                   <div><span>{language === 'mn' ? 'ХӨТӨЛБӨР' : 'PROGRAM'}</span><strong>{language === 'mn' ? 'Мэдээллийн системийн менежмент' : 'Information Systems Management'}</strong></div>
+                  <div><span>{language === 'mn' ? 'МЭРГЭЖИЛ' : 'PROFESSION'}</span><strong>Data Analyst</strong></div>
+                </div>
+              ) : stationIndex === 1 ? (
+                <div className="station-about-info">
+                  <section>
+                    <h3>{language === 'mn' ? 'Миний давуу тал' : 'My strengths'}</h3>
+                    <p>{t.aboutP2}</p>
+                  </section>
+                  <section>
+                    <h3>{language === 'mn' ? 'Боловсрол' : 'Education'}</h3>
+                    <p>{t.education.replace(/^(Боловсрол: |Education: )/, '')}</p>
+                  </section>
+                  <section>
+                    <h3>{t.achievementsTitle}</h3>
+                    <ul>{t.achievements.map((achievement) => <li key={achievement}>{achievement}</li>)}</ul>
+                  </section>
+                </div>
+              ) : stationIndex === 2 ? (
+                <div className="station-skills-info">
+                  <RatedSkills language={language} className="station-skills-groups" />
+                </div>
+              ) : stationIndex === 3 ? (
+                <div className="station-projects-grid">
+                  {t.projects.map((project, projectIndex) => (
+                    <button
+                      className="station-project-card"
+                      key={project.title}
+                      type="button"
+                      onClick={() => {
+                        setStationIndex(null)
+                        setSelected({ ...project, ...projectNarratives[language][projectIndex], projectIndex })
+                      }}
+                    >
+                      <ProjectArtwork project={project} index={projectIndex} language={language} />
+                      <span className="station-project-card-copy">
+                        <span className="station-project-number">0{projectIndex + 1} / 03</span>
+                        <strong>{project.title}</strong>
+                        <span>{project.description}</span>
+                        <span className="station-project-open">{language === 'mn' ? 'Дэлгэрэнгүй үзэх' : 'View details'} <span aria-hidden="true">&#8599;</span></span>
+                      </span>
+                    </button>
+                  ))}
                 </div>
               ) : stationIndex === 4 ? (
                 <ul className="station-contact-list">
@@ -363,9 +474,9 @@ function App() {
                   <li><span>GITHUB</span><a href={githubProfile} target="_blank" rel="noreferrer">{githubProfile.replace('https://', '')}</a></li>
                 </ul>
               ) : <p>{selected.detail}</p>}
-              {stationIndex !== 4 && <div className="modal-stack">{(selected.stack || []).map((tech) => <span className="skill-chip" key={tech}>{tech}</span>)}</div>}
+              {stationIndex !== 1 && stationIndex !== 2 && stationIndex !== 3 && stationIndex !== 4 && <div className="modal-stack">{(selected.stack || []).map((tech) => <span className="skill-chip" key={tech}>{tech}</span>)}</div>}
               {selected.github && <a className="text-link project-source-link" href={selected.github} target="_blank" rel="noreferrer">GitHub <span>&#8599;</span></a>}
-              {stationIndex !== null && <button className="button button-primary station-continue" type="button" onClick={continueTour}>{stationIndex === stationOrder.length - 1 ? 'Finish tour' : 'Continue'} <span>→</span></button>}
+              {stationIndex !== null && <button className="button button-primary station-continue" type="button" onClick={continueTour}>{stationIndex === stationOrder.length - 1 ? (language === 'mn' ? 'Танилцуулгыг дуусгах' : 'Finish tour') : (language === 'mn' ? 'Үргэлжлүүлэх' : 'Continue')} <span>→</span></button>}
               {stationIndex === null && (selected.id === 'cashdesk' ? <a className="text-link" href={`mailto:${contactEmail}`}>{t.modalEmail} <span>&#8599;</span></a> : <a className="text-link" href="#work" onClick={() => setSelected(null)}>{t.modalBrowse} <span>&#8599;</span></a>)}
             </>
           )}        </section>
