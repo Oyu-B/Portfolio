@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import AgenticFactory3D from '@/components/ui/agentic-factory-3d'
 import profileImage from './assets/oyu-profile.png'
+import furnitureProjectImage from './assets/furniture system.png'
+import ismdProjectImage from './assets/ufe ismd.png'
+import starCatcherImage from './assets/star catcher.png'
 import './App.css'
 import {
   categoryKeys,
@@ -47,11 +50,14 @@ const projectNarratives = {
 
 function ProjectArtwork({ project, index, language, large = false }) {
   return (
-    <span className={`project-art ${projectArtClasses[index]}${large ? ' project-art-large' : ''}`} aria-hidden="true">
+    <span className={`project-art ${projectArtClasses[index]}${index < 3 ? ' has-real-screenshot' : ''}${large ? ' project-art-large' : ''}`} aria-hidden="true">
       <span className="project-art-top">
         <span>{language === 'mn' ? 'ОЮ / БҮТЭЭЛ' : 'OYU / WORKS'}</span>
         <span>0{index + 1} — 03</span>
       </span>
+      {index === 0 && <img className="project-screenshot-image" src={furnitureProjectImage} alt="" />}
+      {index === 1 && <img className="project-screenshot-image" src={ismdProjectImage} alt="" />}
+      {index === 2 && <img className="project-screenshot-image" src={starCatcherImage} alt="" />}
       {index === 0 && (
         <span className="shop-window">
           <span className="window-dots">&#8226; &#8226; &#8226;</span>
@@ -295,16 +301,18 @@ function App() {
         <section className="about section-pad" id="about" aria-labelledby="about-title">
           <div className="section-heading"><p className="eyebrow">{t.aboutEyebrow}</p><span className="heading-rule" /></div>
           <div className="about-layout">
-            <h2 id="about-title">{t.aboutTitle}</h2>
-            <div className="about-text">
-              <p>{t.aboutP1}</p>
-              <div className="about-info-block">
-                <h3>{language === 'mn' ? 'Миний давуу тал' : 'My strengths'}</h3>
-                <p>{t.aboutP2}</p>
-              </div>
+            <div className="about-intro">
+              <h2 id="about-title">{t.aboutTitle}</h2>
+              <p className="about-intro-copy">{t.aboutP1}</p>
               <div className="about-info-block education-note">
                 <h3>{language === 'mn' ? 'Боловсрол' : 'Education'}</h3>
                 <p>{t.education.replace(/^(Боловсрол: |Education: )/, '')}</p>
+              </div>
+            </div>
+            <div className="about-text">
+              <div className="about-info-block">
+                <h3>{language === 'mn' ? 'Миний давуу тал' : 'My strengths'}</h3>
+                <p>{t.aboutP2}</p>
               </div>
               <div className="achievement-list">
                 <h3>{t.achievementsTitle}</h3>
@@ -341,13 +349,7 @@ function App() {
               const narrative = projectNarratives[language][projectIndex]
               return (
               <button className="project-card" key={project.title} type="button" onClick={() => setSelected({ ...project, ...projectNarratives[language][projectIndex], projectIndex })} aria-label={`${project.title} ${language === 'mn' ? 'дэлгэрэнгүй нээх' : 'project details'}`}>
-                <span className={`project-art ${['shop-art', 'event-art', 'game-art'][t.projects.indexOf(project)]}`} aria-hidden="true">
-                  <span className="project-art-top"><span>{language === 'mn' ? 'ОЮУ / БҮТЭЭЛ' : 'OYU / WORKS'}</span><span>0{t.projects.indexOf(project) + 1} - 03</span></span>
-                  {t.projects.indexOf(project) === 0 && <span className="shop-window"><span className="window-dots">&#8226; &#8226; &#8226;</span><span className="shop-title">{language === 'mn' ? <>Тавилгын<br /><b>онлайн дэлгүүр.</b></> : <>furniture<br /><b>online shop.</b></>}</span><span className="shop-product"><i /><i /><i /></span><span className="shop-cta">{language === 'mn' ? 'Тавилгын дэлгүүртэй танилцах' : 'EXPLORE FURNITURE'}</span></span>}
-                  {t.projects.indexOf(project) === 1 && <span className="event-board ismd-board"><span className="event-date">{language === 'mn' ? 'СЭЗИС / МСМТ' : 'UFE / ISMD'}</span><span className="event-title">{language === 'mn' ? <>цахим<br />музейн<br /><b>вэбсайт.</b></> : <>digital<br />museum<br /><b>website.</b></>}</span><span className="event-stamp">U</span><span className="event-lines" /></span>}
-                  {t.projects.indexOf(project) === 2 && <span className="catcher-game"><i className="game-star star-one">&#10022;</i><i className="game-star star-two">&#10022;</i><i className="game-star star-three">&#10022;</i><b className="game-basket">OYU</b></span>}
-                  <span className="project-art-foot"><span>{project.type}</span><span className="art-open">↗</span></span>
-                </span>
+                <ProjectArtwork project={project} index={projectIndex} language={language} />
                 <span className="project-info"><span><span className="project-no">0{t.projects.indexOf(project) + 1}</span><strong>{project.title}</strong></span><span className="project-category">{project.category}</span></span>
                 <span className="project-description">{project.description}</span>
                 <span className="project-card-details">

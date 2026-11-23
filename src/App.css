@@ -64,14 +64,18 @@
 .scroll-cue span { display: inline-block; height: 24px; width: 1px; background: var(--lime); transform-origin: top; animation: scroll-hint 1.8s ease-in-out infinite; }
 
 .section-pad { padding-left: 10.2%; padding-right: 10.2%; }
-.about { padding-top: 107px; padding-bottom: 105px; background: #151815; border-bottom: 1px solid var(--line); }
+.about { padding-top: 78px; padding-bottom: 76px; background: #151815; border-bottom: 1px solid var(--line); }
 .section-heading { min-height: 25px; display: flex; align-items: center; gap: 18px; }
 .heading-rule { display: block; height: 1px; flex: 1; background: var(--line); }
 .project-count { color: #6e746a; font: 9px var(--mono); letter-spacing: .08em; }
-.about-layout { display: grid; grid-template-columns: 1.2fr .8fr; align-items: start; gap: 9%; padding: 74px 0 67px; }
+.about-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 9%; padding: 48px 0 0; }
+.about-intro { max-width: 590px; }
+.about-intro-copy { margin: 22px 0 0; color: #aeb3a8; font-size: 14px; line-height: 1.85; }
 .about h2, .work h2 { margin: 0; font-size: clamp(37px, 5vw, 66px); line-height: 1.15; letter-spacing: -.065em; font-weight: 500; }
 .about h2 span, .work h2 span { color: var(--lime); }
+.about h2 span { color: var(--text); }
 .about-text { max-width: 430px; padding-top: 4px; }
+.about-text { max-width: 520px; }
 .about-text p { margin: 0 0 18px; color: #aeb3a8; font-size: 13px; line-height: 1.9; }
 .about-info-block { margin-top: 24px; padding-top: 19px; border-top: 1px solid var(--line); }
 .about-info-block h3 { margin: 0 0 10px; color: var(--text); font-size: 13px; font-weight: 600; }
@@ -102,7 +106,7 @@
 .skill-rating-track > span { display: block; height: 100%; border-radius: inherit; background: rgba(236,72,153,.62); }
 .skill-rating-track > span.is-strong { background: linear-gradient(90deg, #ec4899, #ff85c2); }
 .skill-rating-level { color: var(--muted); font-size: 9px; text-align: right; white-space: nowrap; }
-.achievement-list { margin: 26px 0 7px; padding-top: 19px; border-top: 1px solid var(--line); }
+.achievement-list { margin: 34px 0 7px; padding-top: 19px; border-top: 1px solid var(--line); }
 .achievement-list ul { display: grid; gap: 13px; margin: 0; padding: 0; list-style: none; }
 .achievement-list li { position: relative; padding-left: 18px; color: #aeb3a8; font-size: 12px; line-height: 1.8; }
 .achievement-list li::before { position: absolute; top: .7em; left: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--lime); content: ''; }
@@ -116,6 +120,10 @@
 .project-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 21px; padding-top: 24px; }
 .project-card { min-width: 0; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; color: var(--text); }
 .project-art { position: relative; display: block; aspect-ratio: 1.19; overflow: hidden; background: #20231e; border: 1px solid rgba(240,239,233,.1); transition: border-color .25s ease, transform .35s ease; }
+.project-screenshot-image { position: absolute; z-index: 1; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.project-art.has-real-screenshot > .shop-window,
+.project-art.has-real-screenshot > .event-board,
+.project-art.has-real-screenshot > .catcher-game { display: none; }
 .project-card:hover .project-art { border-color: rgba(236,72,153,.55); transform: translateY(-4px); }
 .project-art-top, .project-art-foot { position: absolute; z-index: 3; left: 17px; right: 17px; display: flex; align-items: center; justify-content: space-between; color: rgba(229,232,219,.66); font: 8px var(--mono); letter-spacing: .08em; }
 .project-art-top { top: 15px; }.project-art-foot { bottom: 15px; }
@@ -231,16 +239,16 @@
   .caption-bottom { bottom: 3%; right: 1%; font-size: 6px; }
   .scroll-cue { left: 23px; bottom: 22px; }
   .section-pad { padding-left: 23px; padding-right: 23px; }
-  .about { padding-top: 68px; padding-bottom: 67px; }
+  .about { padding-top: 68px; padding-bottom: 60px; }
   .eyebrow { font-size: 8px; }
-  .about-layout { grid-template-columns: 1fr; gap: 23px; padding: 43px 0 35px; }
+  .about-layout { grid-template-columns: 1fr; gap: 23px; padding: 36px 0 0; }
   .skills-content { grid-template-columns: 1fr; gap: 25px; padding-top: 42px; }
   .skills-left-group { margin-top: 22px; }
   .skills-content .skill-rating-list li { grid-template-columns: minmax(92px, .8fr) minmax(52px, 1fr) 42px; gap: 8px; }
   .skills-section { padding-top: 72px; padding-bottom: 72px; }
   .skills-content h2 { font-size: clamp(36px, 10vw, 52px); }
   .about h2, .work h2 { font-size: clamp(37px, 10vw, 52px); }
-  .about-text p { font-size: 11px; line-height: 1.85; }
+  .about-text p, .about-intro-copy { font-size: 11px; line-height: 1.85; }
   .skills-row { grid-template-columns: 1fr; gap: 17px; padding-top: 18px; }
   .work { padding-top: 70px; padding-bottom: 78px; }
   .work-heading { display: block; margin: 40px 0 25px; }
@@ -424,7 +432,7 @@
 .portfolio-app[data-theme="light"] .about { background: #f0edf3; }
 .portfolio-app[data-theme="light"] .skills-section, .portfolio-app[data-theme="light"] .work { background: #faf8fb; }
 .portfolio-app[data-theme="light"] .contact { background: #f0edf3; }
-.portfolio-app[data-theme="light"] .about-text p, .portfolio-app[data-theme="light"] .skills-copy p, .portfolio-app[data-theme="light"] .work-heading > p, .portfolio-app[data-theme="light"] .contact-copy > p:not(.eyebrow), .portfolio-app[data-theme="light"] .contact-links a { color: #625968; }
+.portfolio-app[data-theme="light"] .about-text p, .portfolio-app[data-theme="light"] .about-intro-copy, .portfolio-app[data-theme="light"] .skills-copy p, .portfolio-app[data-theme="light"] .work-heading > p, .portfolio-app[data-theme="light"] .contact-copy > p:not(.eyebrow), .portfolio-app[data-theme="light"] .contact-links a { color: #625968; }
 .portfolio-app[data-theme="light"] .skill-chip { color: #524858; border-color: rgba(38,32,42,.2); }
 .portfolio-app[data-theme="light"] .skill-rating-name { color: #524858; }
 .portfolio-app[data-theme="light"] .skill-rating-track { border-color: rgba(38,32,42,.2); background: rgba(38,32,42,.06); }
