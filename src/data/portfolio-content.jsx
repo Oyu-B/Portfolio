@@ -3,12 +3,19 @@ export const content = {
     nav: ['Introduction', 'About me', 'Skills', 'Projects', 'Contact'],
     cv: 'Download CV',
     aboutEyebrow: '01 / ABOUT ME', aboutTitle: <>Balbaatar<br /><span>Oyu</span>.</>,
-    aboutP1: 'I am an Information Systems Management student at the University of Finance and Economics, preparing for a career as a systems analyst. I am punctual, careful with assigned work, and quick to learn.',
-    aboutP2: 'I enjoy analyzing information, organizing documents, working accurately with numerical data, and communicating information clearly.',
+    aboutP1: 'I am an Information Systems Management student at the University of Finance and Economics. I hope to grow in systems analysis and am responsible, careful, and quick to learn.',
+    aboutP2: 'Mathematics is one of my strengths. I enjoy solving problems and working accurately with calculations and numerical data, then presenting information in a clear and useful way.',
     education: 'Education: School No. 1, Govi-Altai (2012–2024) · BSc in Information Systems Management, University of Finance and Economics (2024–present).',
+    achievementsTitle: 'Achievements',
+    achievements: [
+      'Selected as one of the “Top 7 Works” at the Statistics-2026 Student Research Conference organized by the UFE Department of Basic Sciences; successfully presented my research in the oral presentation round.',
+      'Received a special place award at the First National Student Mathematics Olympiad.',
+      'Received the Rector’s Scholarship of the University of Finance and Economics.',
+    ],
     explore: 'Explore my projects',
     skillsEyebrow: '02 / SKILLS', tools: 'TECHNOLOGY, TOOLS & STRENGTHS', skillsTitle: <>Curious learner.<br /><span>Careful with details.</span></>,
-    skillsDescription: 'Technical: C, SQL, Java, JavaScript, TypeScript, HTML and CSS. Tools: Microsoft Excel, Word, Figma and VS Code. Strengths: quick learning, teamwork, communication, responsibility and accurate information handling.',
+    skillsDescription: 'My professional skills and personal strengths, organized separately.',
+    professionalSkillsTitle: 'Professional skills', personalSkillsTitle: 'Personal strengths',
     workEyebrow: '03 / PROJECTS', all: 'All projects', filters: ['Web development'],
     workTitle: <>Selected <span>projects</span>.</>,
     workDescription: <>Web development projects<br />from study and practice.</>,
@@ -18,11 +25,11 @@ export const content = {
     sayHello: 'Send an email', email: 'EMAIL', phone: 'PHONE', github: 'GITHUB',
     viewProfile: 'View profile', footerBack: 'Back to top',
     footerLine: 'PERSONAL PORTFOLIO.', modalBrowse: 'Browse projects', modalEmail: 'Send an email', close: 'Close details',
-    stationIntro: 'Introduction', stationAbout: 'About Oyu', stationSkills: 'Skills', stationProjects: 'Projects', stationContact: 'Contact',
-    stationTypes: ['PROFILE / INTRODUCTION', 'EDUCATION / BACKGROUND', 'SKILLS / TOOLS', 'SELECTED PROJECTS', 'CONTACT INFORMATION'],
+    stationIntro: 'Introduction', stationAbout: 'About me', stationSkills: 'Skills', stationProjects: 'Projects', stationContact: 'Contact',
+    stationTypes: ['PROFILE / INTRODUCTION', 'ABOUT ME / ACHIEVEMENTS', 'SKILLS / TOOLS', 'PROJECTS', 'CONTACT INFORMATION'],
     stationDetails: [
       'Balbaatar Oyu is an Information Systems Management student at the University of Finance and Economics, with a professional interest in systems analysis.',
-      'Secondary education: School No. 1, Govi-Altai, 2012–2024. Bachelor’s studies in Information Systems Management at UFE, 2024–present.',
+      'Mathematics and calculations are among my strengths. Achievements: Statistics-2026 Top 7 Works; special place at the First National Student Mathematics Olympiad; UFE Rector’s Scholarship recipient.',
       'Technical skills include C, SQL, Java, JavaScript, TypeScript, HTML and CSS. Tools include Microsoft Excel, Microsoft Word, Figma and VS Code. Personal strengths include learning quickly, teamwork, communication and responsibility.',
       'Three web projects: a furniture e-commerce website, the UFE ISMD website, and the Star catcher game.',
       'Email: Oyuuuu166@gmail.com · Phone: 85024848. GitHub: github.com/Oyu-B.',
@@ -36,13 +43,20 @@ export const content = {
   mn: {
     nav: ['Танилцуулга', 'Миний тухай', 'Ур чадвар', 'Бүтээлүүд', 'Холбоо барих'],
     aboutEyebrow: '01 / МИНИЙ ТУХАЙ', aboutTitle: <>Балбаатар<br /><span>Оюу</span>.</>,
-    aboutP1: 'Би Санхүү, эдийн засгийн их сургуулийн Мэдээллийн системийн менежментийн оюутан бөгөөд системийн шинжээчээр ажиллах зорилготой. Хариуцсан ажлаа цагт нь, нямбай хийж, шинэ зүйл хурдан сурахыг хичээдэг.',
-    aboutP2: 'Мэдээлэлд дүн шинжилгээ хийх, баримт бичиг цэгцлэх, тоон мэдээлэлтэй нягт нямбай ажиллах, мэдээллийг ойлгомжтой дамжуулах дуртай.',
+    aboutP1: 'Би Санхүү, эдийн засгийн их сургуулийн Мэдээллийн системийн менежментийн оюутан. Системийн шинжилгээний чиглэлээр хөгжих зорилготой, хариуцлагатай, нямбай бөгөөд шинэ зүйлийг хурдан сурдаг.',
+    aboutP2: 'Математикийн хичээлдээ сайн, тооцоолол хийх болон тоон мэдээлэлтэй ажиллахдаа чадварлаг. Шинэ мэдлэгийг хурдан эзэмшиж, мэдээллийг ойлгомжтой, хэрэгцээтэй үр дүн болгон боловсруулах дуртай.',
     education: 'Боловсрол: Говь-Алтай аймгийн 1-р сургууль (2012–2024) · Санхүү, эдийн засгийн их сургууль, Мэдээллийн системийн менежментийн бакалавр (2024–одоог хүртэл).',
+    achievementsTitle: 'Амжилт, шагнал',
+    achievements: [
+      'СЭЗИС-ийн Суурь шинжлэх ухааны тэнхимээс зохион байгуулсан “Статистик-2026” оюутны эрдэм шинжилгээний бага хурлын “Шилдэг 7 бүтээл”-ийн нэгээр шалгарч, аман илтгэлийн шатанд судалгаагаа амжилттай танилцуулсан.',
+      'Оюутны улсын математикийн анхдугаар олимпиадад амжилттай оролцож, тусгай байр эзэлсэн.',
+      'СЭЗИС-ийн ректорын нэрэмжит тэтгэлэг хүртсэн.',
+    ],
     explore: 'Бүтээлүүдтэй танилцах',
     skillsEyebrow: '02 / УР ЧАДВАР', tools: 'ТЕХНОЛОГИ, ХЭРЭГСЭЛ, ДАВУУ ТАЛ',
     skillsTitle: <>Шинэ зүйл сурах дуртай,<br /><span>нямбай ажилладаг.</span></>,
-    skillsDescription: 'Техникийн ур чадвар: C, SQL, Java, JavaScript, TypeScript, HTML, CSS. Хэрэгсэл: Microsoft Excel, Word, Figma, VS Code. Давуу тал: хурдан суралцах, багаар ажиллах, харилцаа, хариуцлага, мэдээлэлтэй нягт нямбай ажиллах.',
+    skillsDescription: 'Мэргэжлийн ур чадвар болон хувийн давуу талаа тусад нь ангилан харууллаа.',
+    professionalSkillsTitle: 'Мэргэжлийн ур чадвар', personalSkillsTitle: 'Хувийн ур чадвар',
     workEyebrow: '03 / ТӨСЛҮҮД', all: 'Бүх бүтээл', filters: ['Вэб хөгжүүлэлт'],
     workTitle: <>Бүтээлүүд<span>.</span></>,
     workDescription: <>Суралцах болон дадлагын<br />үеэр бүтээсэн вэб бүтээлүүд.</>,
@@ -52,11 +66,11 @@ export const content = {
     sayHello: 'Имэйл илгээх', email: 'ИМЭЙЛ', phone: 'УТАС', github: 'GITHUB',
     viewProfile: 'Профайл үзэх', footerBack: 'Дээш буцах',
     footerLine: 'ХУВИЙН ПОРТФОЛИО.', modalBrowse: 'Төслүүдийг үзэх', modalEmail: 'Имэйл илгээх', close: 'Дэлгэрэнгүйг хаах',
-    stationIntro: 'Танилцуулга', stationAbout: 'Боловсрол', stationSkills: 'Ур чадвар', stationProjects: 'Бүтээлүүд', stationContact: 'Холбоо барих',
-    stationTypes: ['ТАНИЛЦУУЛГА', 'БОЛОВСРОЛ / ТУРШЛАГА', 'УР ЧАДВАР / ХЭРЭГСЭЛ', 'БҮТЭЭЛҮҮД', 'ХОЛБОО БАРИХ МЭДЭЭЛЭЛ'],
+    stationIntro: 'Танилцуулга', stationAbout: 'Миний тухай', stationSkills: 'Ур чадвар', stationProjects: 'Бүтээлүүд', stationContact: 'Холбоо барих',
+    stationTypes: ['ТАНИЛЦУУЛГА', 'МИНИЙ ТУХАЙ / АМЖИЛТ', 'УР ЧАДВАР / ХЭРЭГСЭЛ', 'БҮТЭЭЛҮҮД', 'ХОЛБОО БАРИХ МЭДЭЭЛЭЛ'],
     stationDetails: [
       'Балбаатар Оюу нь Санхүү, эдийн засгийн их сургуулийн Мэдээллийн системийн менежментийн оюутан бөгөөд системийн шинжилгээний чиглэлээр ажиллах сонирхолтой.',
-      'Говь-Алтай аймгийн 1-р сургуульд 2012–2024 онд суралцсан. 2024 оноос Санхүү, эдийн засгийн их сургуульд Мэдээллийн системийн менежментийн бакалаврын хөтөлбөрөөр суралцаж байна.',
+      'Математик, тооцоолол хийхдээ сайн. Амжилт: “Статистик-2026” хурлын Шилдэг 7 бүтээл; оюутны улсын математикийн анхдугаар олимпиадын тусгай байр; СЭЗИС-ийн ректорын нэрэмжит тэтгэлэг.',
       'C, SQL, Java, JavaScript, TypeScript, HTML, CSS хэл болон Microsoft Excel, Word, Figma, VS Code хэрэгсэл ашиглана. Хурдан суралцах, багаар ажиллах, харилцах, хариуцлагатай байх чадвартай.',
       'Вэб хөгжүүлэлтийн гурван бүтээл: тавилгын онлайн дэлгүүр, СЭЗИС-ийн МСМТ-ийн вэбсайт, Star catcher тоглоом.',
       'Имэйл: Oyuuuu166@gmail.com · Утас: 85024848 · GitHub: github.com/Oyu-B.',
@@ -110,6 +124,26 @@ export const skillMn = [
   'Хариуцлага',
   'Мэдээлэлд дүн шинжилгээ хийх',
   'Тоон мэдээлэлтэй алдаагүй ажиллах',
+]
+
+export const professionalSkills = [
+  'C', 'SQL', 'Java', 'JavaScript', 'TypeScript', 'HTML', 'CSS',
+  'Microsoft Excel', 'Microsoft Word', 'Figma', 'VS Code', 'English',
+]
+
+export const professionalSkillMn = [
+  'C', 'SQL', 'Java', 'JavaScript', 'TypeScript', 'HTML', 'CSS',
+  'Microsoft Excel', 'Microsoft Word', 'Figma', 'VS Code', 'Англи хэл',
+]
+
+export const personalSkills = [
+  'Quick learner', 'Mathematical reasoning', 'Accurate calculations',
+  'Teamwork', 'Communication', 'Responsibility', 'Attention to detail',
+]
+
+export const personalSkillMn = [
+  'Шинэ зүйл хурдан сурах', 'Математик сэтгэлгээ', 'Тооцоолол хийх чадвар',
+  'Багаар ажиллах', 'Харилцааны чадвар', 'Хариуцлагатай', 'Нямбай ажиллах',
 ]
 
 // Contact information, portfolio filters, and guided-tour order.

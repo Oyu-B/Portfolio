@@ -105,11 +105,6 @@ export default function AgenticFactory3D({
           <a href="#contact">{language === 'mn' ? 'Холбоо барих' : 'Contact'}</a>
           <a className="cv-download" href={language === 'mn' ? '/Oyu_Portfolio_Mongolian.pdf' : '/Oyu_Portfolio_English.pdf'} download>{language === 'mn' ? 'Товч намтар татах' : 'Download CV'}</a>
         </nav>
-        <div className="status" id="status">
-          <i />
-          <span id="status-text">{language === 'mn' ? 'Портфолио ажиллаж байна' : 'Portfolio running'}</span>
-          <span>{language === 'mn' ? 'ЦУВРАЛ 001' : 'SERIES 001'}</span>
-        </div>
       </header>
       <div className="scene-heading debug-ui">
         <span className="index">5 {language === 'mn' ? 'ХЭСЭГ' : 'STATIONS'} / 1 {language === 'mn' ? 'ПОРТФОЛИО' : 'PORTFOLIO'}</span>
@@ -601,11 +596,11 @@ function initMachineScene(
       },
       {
         id: 'admin',
-        name: isMn ? 'Боловсрол' : 'Education',
+        name: isMn ? 'Миний тухай' : 'About me',
         step: 2,
-        output: isMn ? 'боловсрол' : 'education',
+        output: isMn ? 'миний тухай' : 'about me',
         pos: [-1.65, 0.29, -2.03],
-        desc: isMn ? 'СЭЗИС-ийн оюутны боловсрол, мэдээлэл.' : 'Education and background at the University of Finance and Economics.'
+        desc: isMn ? 'Оюутны танилцуулга, амжилт, тэтгэлгийн мэдээлэл.' : 'Personal profile, achievements and scholarship information.'
       },
       {
         id: 'storefront',
@@ -1276,6 +1271,7 @@ function initMachineScene(
       downY = 0
     let cameraAnimating = true,
       tourTravel: { start: number; end: number; elapsed: number; duration: number } | null = null,
+      tourPacketProgress: number | null = null,
       flightTime = 0,
       lastDraw = -1,
       visible = true,
@@ -1438,8 +1434,11 @@ function initMachineScene(
       selected = id
       mode = 'stations'
       cameraMode = 'station'
+      tourPacketProgress = null
+      playing = true
+      syncPlayback()
       lastInteraction = performance.now()
-      tourTravel = { start, end, elapsed: 0, duration: 1.8 }
+      tourTravel = { start, end, elapsed: 0, duration: 2.2 }
 
       path.getPointAt(start, desiredTarget)
       desiredTarget.y += 1.25
@@ -1468,8 +1467,6 @@ function initMachineScene(
       b.innerHTML = playing
         ? '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><rect x="2" y="1" width="2.5" height="10" rx=".5"/><rect x="7.5" y="1" width="2.5" height="10" rx=".5"/></svg>'
         : '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1l8 5-8 5z"/></svg>'
-      $('status').classList.toggle('paused', !playing)
-      $('status-text').textContent = isMn ? (playing ? 'Танилцуулга ажиллаж байна' : 'Танилцуулга түр зогссон') : (playing ? 'Portfolio running' : 'Portfolio paused')
     }
     function play() {
       playing = true
@@ -1689,6 +1686,21 @@ function initMachineScene(
           packet.group.rotation.set(0, 0.18, 0)
           stage = u < adminU * 0.7 ? 1 : u < storeU * 0.96 ? 2 : u < cashU * 0.83 ? 3 : 4
         }
+        if (i === 0) {
+          if (tourTravel) {
+            const progress = Math.min(tourTravel.elapsed / tourTravel.duration, 1)
+            const easedProgress = progress * progress * (3 - 2 * progress)
+            tourPacketProgress = (tourTravel.start + (tourTravel.end - tourTravel.start) * easedProgress) % 1
+          }
+          if (tourPacketProgress !== null) {
+            path.getPointAt(tourPacketProgress, packet.group.position)
+            packet.group.position.x *= 1 + spread * 0.12
+            packet.group.position.z *= 1 + spread * 0.15
+            packet.group.position.y += 0.43
+            packet.group.rotation.set(0, 0.18, 0)
+            stage = tourPacketProgress < adminU * 0.7 ? 1 : tourPacketProgress < storeU * 0.96 ? 2 : tourPacketProgress < cashU * 0.83 ? 3 : 4
+          }
+        }
         if (packet.stage !== stage) {
           packet.faces.forEach((f, j) => (f.visible = j === stage))
           packet.stage = stage
@@ -1729,6 +1741,7 @@ function initMachineScene(
         const progress = Math.min(tourTravel.elapsed / tourTravel.duration, 1)
         const easedProgress = progress * progress * (3 - 2 * progress)
         const routeProgress = (tourTravel.start + (tourTravel.end - tourTravel.start) * easedProgress) % 1
+        tourPacketProgress = routeProgress
 
         path.getPointAt(routeProgress, desiredTarget)
         desiredTarget.y += 1.25
@@ -1738,6 +1751,7 @@ function initMachineScene(
         if (progress === 1) {
           tourTravel = null
           setCameraGoal()
+          pause()
         }
       } else if (cameraMode === 'station' && cameraAnimating) setCameraGoal()
       if (cameraAnimating && !dragging) {
