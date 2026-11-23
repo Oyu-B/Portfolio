@@ -356,8 +356,14 @@ function App() {
                   <div><span>{language === 'mn' ? 'СУРАЛЦАЖ БУЙ ГАЗАР' : 'UNIVERSITY'}</span><strong>{language === 'mn' ? 'Санхүү, эдийн засгийн их сургууль' : 'University of Finance and Economics'}</strong></div>
                   <div><span>{language === 'mn' ? 'ХӨТӨЛБӨР' : 'PROGRAM'}</span><strong>{language === 'mn' ? 'Мэдээллийн системийн менежмент' : 'Information Systems Management'}</strong></div>
                 </div>
+              ) : stationIndex === 4 ? (
+                <ul className="station-contact-list">
+                  <li><span>{language === 'mn' ? 'ИМЭЙЛ' : 'EMAIL'}</span><a href={`mailto:${contactEmail}`}>{contactEmail}</a></li>
+                  <li><span>{language === 'mn' ? 'УТАС' : 'PHONE'}</span><a href={`tel:${phoneNumber}`}>{phoneNumber}</a></li>
+                  <li><span>GITHUB</span><a href={githubProfile} target="_blank" rel="noreferrer">{githubProfile.replace('https://', '')}</a></li>
+                </ul>
               ) : <p>{selected.detail}</p>}
-              <div className="modal-stack">{(selected.stack || []).map((tech) => <span className="skill-chip" key={tech}>{tech}</span>)}</div>
+              {stationIndex !== 4 && <div className="modal-stack">{(selected.stack || []).map((tech) => <span className="skill-chip" key={tech}>{tech}</span>)}</div>}
               {selected.github && <a className="text-link project-source-link" href={selected.github} target="_blank" rel="noreferrer">GitHub <span>&#8599;</span></a>}
               {stationIndex !== null && <button className="button button-primary station-continue" type="button" onClick={continueTour}>{stationIndex === stationOrder.length - 1 ? 'Finish tour' : 'Continue'} <span>→</span></button>}
               {stationIndex === null && (selected.id === 'cashdesk' ? <a className="text-link" href={`mailto:${contactEmail}`}>{t.modalEmail} <span>&#8599;</span></a> : <a className="text-link" href="#work" onClick={() => setSelected(null)}>{t.modalBrowse} <span>&#8599;</span></a>)}

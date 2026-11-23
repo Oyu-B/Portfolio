@@ -471,6 +471,12 @@
 .station-profile-info > div { display: grid; gap: 6px; }
 .station-profile-info span { color: var(--lime); font: 9px var(--mono); letter-spacing: .13em; }
 .station-profile-info strong { color: var(--text); font-size: clamp(14px, 1.5vw, 18px); font-weight: 500; line-height: 1.5; }
+.station-contact-list { display: grid; gap: 0; width: min(100%, 620px); margin: 18px 0 30px; padding: 0; list-style: none; }
+.station-contact-list li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; padding: 15px 0; border-bottom: 1px solid var(--line); }
+.station-contact-list li:first-child { border-top: 1px solid var(--line); }
+.station-contact-list li > span { color: var(--lime); font: 10px var(--mono); letter-spacing: .12em; }
+.station-contact-list a { color: var(--text); font-size: 14px; text-decoration: none; }
+.station-contact-list a:hover { color: var(--lime); }
 .station-page-count { margin: 0 0 34px; color: var(--lime); font: 11px var(--mono); letter-spacing: .13em; }
 .station-page-count span { color: var(--muted); }
 .station-page h2 { max-width: 760px; font-size: clamp(38px, 7vw, 76px); }
