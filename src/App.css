@@ -1,4 +1,4 @@
-#root { overflow: hidden; }
+#root { overflow-x: clip; }
 .site-header { height: 78px; padding: 0 7.1%; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); position: absolute; z-index: 10; inset: 0 0 auto; background: rgba(17,19,17,.8); backdrop-filter: blur(18px); }
 .brand { display: inline-flex; align-items: center; gap: 12px; }
 .brand-mark { display: grid; place-items: center; height: 34px; width: 34px; border: 1px solid rgba(236,72,153,.62); border-radius: 50%; color: var(--lime); font-size: 17px; font-weight: 800; letter-spacing: -2px; }
@@ -402,8 +402,52 @@
 .portfolio-app[data-theme="light"] .modal-close { color: #26202a; }
 .button-primary:hover { background: #f9a8d4; }
 
+/* Keep the 3D landing scene inside the visible viewport on short devices. */
+.factory-shell {
+  height: 100vh;
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .portfolio-preferences {
+    top: auto;
+    right: 12px;
+    bottom: 174px;
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .language-switch button,
+  .theme-switch {
+    min-height: 28px;
+    padding-inline: 7px;
+  }
+}
+
+@media (max-width: 480px) {
+  .factory-shell { min-height: 600px; }
+  .portfolio-preferences { bottom: 174px; }
+  .theme-switch { gap: 3px; font-size: 9px; }
+  .station-page { min-height: 0; max-height: calc(100svh - 24px); overflow-y: auto; }
+  .station-page-count { margin-bottom: 16px; }
+  .station-page h2 { font-size: clamp(32px, 10vw, 44px); }
+  .station-page .modal-stack { margin: 18px 0 22px; }
+  .station-continue { min-height: 44px; }
+  .contact-bottom { flex-wrap: wrap; }
+}
+
+@media (max-height: 640px) and (max-width: 900px) {
+  .factory-shell { min-height: 520px; }
+}
+
 .station-backdrop { padding: clamp(12px, 4vw, 48px); }
 .station-page { display: flex; flex-direction: column; justify-content: center; width: min(100%, 1060px); min-height: min(76vh, 680px); padding: clamp(30px, 7vw, 86px); background: radial-gradient(ellipse at 82% 18%, rgba(236,72,153,.12), transparent 34%), #17181c; }
+.station-page-intro { display: grid; grid-template-columns: minmax(180px, .8fr) minmax(0, 1.3fr); column-gap: clamp(24px, 5vw, 64px); align-items: center; }
+.station-page-intro .station-page-count { grid-column: 1 / -1; }
+.station-profile-image { grid-column: 1; grid-row: 2 / span 5; display: block; width: min(100%, 340px); aspect-ratio: 1; object-fit: cover; border-radius: 14px; background: #000; transform: scaleX(-1); }
+.station-page-intro > .eyebrow, .station-page-intro h2, .station-page-intro > p:not(.eyebrow, .station-page-count), .station-page-intro .modal-stack, .station-page-intro .station-continue { grid-column: 2; }
 .station-page-count { margin: 0 0 34px; color: var(--lime); font: 11px var(--mono); letter-spacing: .13em; }
 .station-page-count span { color: var(--muted); }
 .station-page h2 { max-width: 760px; font-size: clamp(38px, 7vw, 76px); }
@@ -412,6 +456,19 @@
 .station-continue { align-self: flex-start; cursor: pointer; }
 .station-continue span { color: inherit; }
 .portfolio-app[data-theme="light"] .station-page { background: radial-gradient(ellipse at 82% 18%, rgba(219,39,119,.1), transparent 34%), #fff; }
+@media (max-width: 650px) {
+  .station-page-intro { grid-template-columns: minmax(0, 1fr); }
+  .station-page-intro .station-page-count, .station-page-intro > .eyebrow, .station-page-intro h2, .station-page-intro > p:not(.eyebrow, .station-page-count), .station-page-intro .modal-stack, .station-page-intro .station-continue { grid-column: 1; }
+  .station-profile-image { grid-column: 1; grid-row: auto; width: min(100%, 220px); margin: 0 auto 24px; }
+}
+.education-note { padding-top: 17px; border-top: 1px solid var(--line); }
+.project-source-link { margin: 0 18px 12px 0; }
+.game-art { background: radial-gradient(ellipse at 50% 85%, rgba(236,72,153,.24), transparent 54%), linear-gradient(145deg, #251d2b, #111319 72%); }
+.catcher-game { position: absolute; inset: 18% 12%; display: block; overflow: hidden; background-image: radial-gradient(rgba(255,255,255,.14) .7px, transparent .7px); background-size: 19px 19px; }
+.game-star { position: absolute; color: #f8a4d0; font-style: normal; text-shadow: 0 0 16px rgba(236,72,153,.8); }
+.star-one { left: 23%; top: 19%; font-size: 24px; }.star-two { right: 24%; top: 39%; font-size: 17px; }.star-three { left: 47%; top: 55%; font-size: 20px; }
+.game-basket { position: absolute; bottom: 12%; left: 37%; padding: 8px 20px; border: 1px solid #f472b6; border-radius: 3px 3px 13px 13px; color: #f9a8d4; font: 10px var(--mono); letter-spacing: .12em; box-shadow: 0 0 18px rgba(236,72,153,.22); }
+.ismd-board { background: #e8e4d8; }
 
 @media (max-width: 760px) {
   .portfolio-preferences { top: 80px; right: 17px; }

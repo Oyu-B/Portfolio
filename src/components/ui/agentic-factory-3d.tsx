@@ -6,26 +6,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
+import './agentic-factory-3d.css'
 
 /**
- * Koji Portfolio - Interactive 3D Showcase
+ * Interactive three.js portfolio scene.
  *
- * A short-video factory that AI agents build, as one machine you can spin:
- * order → script → video → post → payment across five stations on a metal plate.
- * Four modes (Assembled, Cutaway, Stations, One project), five cameras, hover and
- * click stations. Procedural three.js: no models, no images.
- *
- * Built by OpenAI Codex (GPT-6 Astra) from a single prompt; ported to React by Claude.
- * Live demo: https://agentic-factory-3d.vercel.app · Next.js template: https://github.com/eugeneshilow/agentic-3d-templates
-          made with curiosity <span>Koji's portfolio</span>
- *
- * Fills its box: give it a height (default 100vh). Dependencies: react, three.
- * The embed prop hides the panels for a landing-page hero: on a frame wider than 900 px
- * the machine moves to the right 58 % and leaves the left side for your headline.
- * Control it with window.__machine: setMode, setCamera, focusStation, play, pause.
- *
- * Type arguments are written `Foo< Bar>` with a space after `<` on purpose: the
- * 21st.dev publish scanner reads `<Bar` as a JSX tag. Prettier tidies it back.
+ * Renders the five portfolio stations and provides camera, playback, and
+ * guided-tour controls. Parent components can listen for station selection
+ * and start the guided tour through the callbacks below.
  */
 
 export type AgenticFactory3DProps = {
@@ -37,6 +25,7 @@ export type AgenticFactory3DProps = {
   embed?: boolean
   /** A station was clicked: 'engine' | 'admin' | 'storefront' | 'cabinet' | 'cashdesk'. */
   onStation?: (id: StationId) => void
+  onTourStart?: () => void
   /** The first real frame is drawn. */
   onReady?: () => void
 }
@@ -47,13 +36,14 @@ export default function AgenticFactory3D({
   embed = false,
   language = 'en',
   onStation,
+  onTourStart,
   onReady,
 }: AgenticFactory3DProps) {
-  const rootRef = useRef< HTMLDivElement>(null)
-  const handlers = useRef({ onStation, onReady })
+  const rootRef = useRef<HTMLDivElement>(null)
+  const handlers = useRef({ onStation, onTourStart, onReady })
   useEffect(() => {
-    handlers.current = { onStation, onReady }
-  }, [onStation, onReady])
+    handlers.current = { onStation, onTourStart, onReady }
+  }, [onStation, onTourStart, onReady])
 
   useEffect(() => {
     const root = rootRef.current
@@ -67,6 +57,7 @@ export default function AgenticFactory3D({
         embedded: embed,
         language,
         onStation: (id) => handlers.current.onStation?.(id),
+        onTourStart: () => handlers.current.onTourStart?.(),
         onReady: () => handlers.current.onReady?.(),
       })
     })
@@ -82,7 +73,6 @@ export default function AgenticFactory3D({
       className={['agentic-factory-3d', embed && 'embed', className].filter(Boolean).join(' ')}
       style={{ height }}
     >
-      <style dangerouslySetInnerHTML={{ __html: STYLES }} />
       <div
         id="scene"
         role="img"
@@ -103,8 +93,8 @@ export default function AgenticFactory3D({
             </svg>
           </div>
           <div>
-            <strong>Koji's Portfolio</strong>
-            <small>Interactive portfolio</small>
+            <strong>{language === 'mn' ? 'Оюугийн портфолио' : "Oyu's Portfolio"}</strong>
+            <small>{language === 'mn' ? 'Интерактив портфолио' : 'Interactive portfolio'}</small>
           </div>
         </div>
         <nav className="portfolio-nav" aria-label={language === 'mn' ? 'Портфолионы хэсгүүд' : 'Portfolio sections'}>
@@ -113,18 +103,17 @@ export default function AgenticFactory3D({
           <a href="#skills">{language === 'mn' ? 'Ур чадвар' : 'Skills'}</a>
           <a href="#work">{language === 'mn' ? 'Бүтээлүүд' : 'Projects'}</a>
           <a href="#contact">{language === 'mn' ? 'Холбоо барих' : 'Contact'}</a>
-          <a className="cv-download" href="/Koji_CV.pdf" download="Koji_CV.pdf">{language === 'mn' ? 'CV татах' : 'Download CV'} <span aria-hidden="true">&#8599;</span></a>
+          <a className="cv-download" href={language === 'mn' ? '/Oyu_Portfolio_Mongolian.pdf' : '/Oyu_Portfolio_English.pdf'} download>{language === 'mn' ? 'Товч намтар татах' : 'Download CV'}</a>
         </nav>
         <div className="status" id="status">
           <i />
           <span id="status-text">{language === 'mn' ? 'Портфолио ажиллаж байна' : 'Portfolio running'}</span>
-          <span>SERIES 001</span>
+          <span>{language === 'mn' ? 'ЦУВРАЛ 001' : 'SERIES 001'}</span>
         </div>
       </header>
       <div className="scene-heading debug-ui">
-        {language === 'mn' ? 'Миний бүтээж буй зүйлс' : 'The work I am building'} <span className="index">5 {language === 'mn' ? 'ХЭСЭГ' : 'STATIONS'} / 1 {language === 'mn' ? 'ПОРТФОЛИО' : 'PORTFOLIO'}</span>
+        <span className="index">5 {language === 'mn' ? 'ХЭСЭГ' : 'STATIONS'} / 1 {language === 'mn' ? 'ПОРТФОЛИО' : 'PORTFOLIO'}</span>
       </div>
-      <div className="coordinates debug-ui">PORTFOLIO 2026 - FROM IDEA TO IMPACT</div>
       <div id="journey" className="debug-ui">
         <div className="journey-icon">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
@@ -145,47 +134,21 @@ export default function AgenticFactory3D({
         <p />
       </div>
       <div className="controls debug-ui">
-        <nav className="mode-bar" aria-label={language === 'mn' ? 'Портфолионы харагдац' : 'Portfolio mode'}>
-          <button data-mode="assembled" aria-pressed="true">
+        <nav className="mode-bar" aria-label={language === 'mn' ? 'Танилцуулгын тохиргоо' : 'Portfolio controls'}>
+          <button data-mode="stations" aria-pressed="true">
             <svg viewBox="0 0 16 16" fill="none">
-              <path
-                d="M8 1.5l6 3.3v6.4l-6 3.3-6-3.3V4.8L8 1.5zM2 4.8l6 3.4 6-3.4M8 8.2v6.3"
-                stroke="currentColor"
-                strokeLinejoin="round"
-              />
+              <path d="M8 1.5l6 3-6 3-6-3 6-3zM2 8l6 3 6-3M2 11.5l6 3 6-3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            {language === 'mn' ? 'Бүгд' : 'Assembled'}
+            {language === 'mn' ? 'Хэсгүүд' : 'Sections'}
           </button>
-          <button data-mode="cutaway" aria-pressed="false">
-            <svg viewBox="0 0 16 16" fill="none">
-              <path
-                d="M3 2h10v12H3zM8 2v12M10.5 4l2.5 2.5m-2.5 0L13 9m-2.5 0 2.5 2.5"
-                stroke="currentColor"
-                strokeLinejoin="round"
-              />
-            </svg>
-            {language === 'mn' ? 'Зүсэлт' : 'Cutaway'}
-          </button>
-          <button data-mode="stations" aria-pressed="false">
-            <svg viewBox="0 0 16 16" fill="none">
-              <path
-                d="M8 1.5l6 3-6 3-6-3 6-3zM2 8l6 3 6-3M2 11.5l6 3 6-3"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            {language === 'mn' ? 'Хэсгүүд' : 'Stations'}
-          </button>
-          <button data-mode="order" aria-pressed="false">
+          <button type="button" data-tour-start>
             <svg viewBox="0 0 16 16" fill="none">
               <path d="M5 2.5l8 5.5-8 5.5v-11z" stroke="currentColor" strokeLinejoin="round" />
             </svg>
-            {language === 'mn' ? 'Танилцуулга' : 'Portfolio tour'}
+            {language === 'mn' ? 'Танилцуулга үзэх' : 'Start the tour'}
           </button>
         </nav>
         <nav className="camera-row" aria-label={language === 'mn' ? 'Камерын харагдац' : 'Camera'}>
-          <span className="caption">{language === 'mn' ? 'ХАРАХ' : 'VIEW'}</span>
           <button data-camera="overview" aria-pressed="true">
             {language === 'mn' ? 'Ерөнхий' : 'Overview'}
           </button>
@@ -198,11 +161,8 @@ export default function AgenticFactory3D({
           <button data-camera="station" aria-pressed="false">
             {language === 'mn' ? 'Хэсэг' : 'Station'}
           </button>
-          <button data-camera="flight" aria-pressed="false">
-            {language === 'mn' ? 'Аялал' : 'Flight'}
-          </button>
           <span className="divider" />
-          <button id="play" aria-label="Pause the animation" aria-pressed="false">
+          <button id="play" aria-label={language === 'mn' ? 'Хөдөлгөөнийг түр зогсоох' : 'Pause the animation'} aria-pressed="false">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
               <rect x="2" y="1" width="2.5" height="10" rx=".5" />
               <rect x="7.5" y="1" width="2.5" height="10" rx=".5" />
@@ -211,10 +171,6 @@ export default function AgenticFactory3D({
         </nav>
       </div>
       <footer className="footer">
-        <a className="wordmark" href="#home">
-          made with curiosity <span>Koji's portfolio</span>
-        </a>
-        <span className="footer-center debug-ui">BUILT BY KOJI</span>
         <span className="hint debug-ui">
           <svg width="13" height="16" viewBox="0 0 13 16" fill="none">
             <rect x="2" y="1" width="9" height="14" rx="4.5" stroke="currentColor" />
@@ -228,25 +184,15 @@ export default function AgenticFactory3D({
         <span>{language === 'mn' ? 'Портфолиог ачаалж байна' : 'Assembling your machine'}</span>
       </div>
       <div id="error" role="alert">
-        <strong>Could not start the 3D scene</strong>
-        <p>Check that WebGL is turned on in your browser.</p>
+        <strong>{language === 'mn' ? '3D дүрслэлийг эхлүүлж чадсангүй' : 'Could not start the 3D scene'}</strong>
+        <p>{language === 'mn' ? 'Хөтөч дээр WebGL асаалттай эсэхийг шалгана уу.' : 'Check that WebGL is turned on in your browser.'}</p>
         <button onClick={() => location.reload()}>{language === 'mn' ? 'Дахин оролдох' : 'Try again'}</button>
       </div>
     </div>
   )
 }
 
-// ---------------------------------------------------------------------------
-// The scene: lib/machine-scene.ts of the template, inlined (21st.dev takes one file).
-// ---------------------------------------------------------------------------
-
-// The whole machine: plate, five stations, conveyor, cargo, camera, labels and
-// the embed API. Ported line by line from the single-file original (index.html
-// built by Codex): the same parts, the same numbers, the same timing. What
-// changed: three.js comes from npm instead of a CDN, the copy (including the
-// text painted on the in-scene screens) is English, DOM lookups are scoped to
-// the component root, and initMachineScene() returns a dispose function for
-// React unmounts. All geometry and textures are procedural: no models, no images.
+// Three.js scene types and browser-facing controls.
 
 export type MachineMode = 'assembled' | 'cutaway' | 'stations' | 'order'
 export type MachineCamera = 'overview' | 'side' | 'top' | 'station' | 'flight'
@@ -255,6 +201,7 @@ export type StationId = 'engine' | 'admin' | 'storefront' | 'cabinet' | 'cashdes
 export type MachineApi = {
   setMode: (name: string) => boolean
   focusStation: (id: string) => boolean
+  travelToStation: (id: string) => boolean
   setCamera: (name: string) => boolean
   play: () => boolean
   pause: () => boolean
@@ -263,7 +210,7 @@ export type MachineApi = {
 declare global {
   interface Window {
     __machine?: MachineApi
-    __machineDebug?: { getState: () => Record< string, unknown> }
+    __machineDebug?: { getState: () => Record<string, unknown> }
   }
 }
 
@@ -272,15 +219,19 @@ export type MachineSceneOptions = {
   embedded: boolean
   language: 'en' | 'mn'
   onStation?: (id: StationId) => void
+  onTourStart?: () => void
   onReady?: () => void
 }
 
 function initMachineScene(
   root: HTMLElement,
   fontFamily: string,
-  options: MachineSceneOptions
+  options: MachineSceneOptions,
 ): () => void {
   const cleanups: Array<() => void> = []
+  const isMn = options.language === 'mn'
+
+  // Keep scene sizing and DOM events scoped to this component instance.
   // The component sizes the scene to its own box; the template filled the window.
   const frameWidth = () => root.clientWidth
   const frameHeight = () => root.clientHeight
@@ -290,8 +241,8 @@ function initMachineScene(
     target.addEventListener(type, fn)
     cleanups.push(() => target.removeEventListener(type, fn))
   }
-  function $< T extends HTMLElement = HTMLElement>(id: string): T {
-    const el = root.querySelector< T>(`#${id}`)
+  function $<T extends HTMLElement = HTMLElement>(id: string): T {
+    const el = root.querySelector<T>(`#${id}`)
     if (!el) throw new Error(`Scene markup is missing #${id}`)
     return el
   }
@@ -304,7 +255,9 @@ function initMachineScene(
     for (const fn of cleanups.reverse()) fn()
     cleanups.length = 0
   }
+
   try {
+    // Set up the renderer, camera, environment, and scene materials.
     const TAU = Math.PI * 2
     const embedded = options.embedded
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -408,7 +361,7 @@ function initMachineScene(
     }
     type Vec3 = [number, number, number]
     type Material = THREE.Material
-    const geometries = new Map< string, THREE.BufferGeometry>()
+    const geometries = new Map<string, THREE.BufferGeometry>()
     function boxGeo(w: number, h: number, d: number, r = 0.04) {
       const k = `b${w},${h},${d},${r}`
       if (!geometries.has(k))
@@ -581,10 +534,8 @@ function initMachineScene(
       c.strokeStyle = '#4d545c'
       c.lineWidth = 2
       c.strokeRect(2, 2, w - 4, h - 4)
-      print(c, 'KOJI', 45, 79, 40, '#d9d8cd', 650)
-      print(c, 'web / systems / quality', 285, 79, 34, '#b8bdc1', 450)
-      print(c, 'PERSONAL PORTFOLIO    /    SELECTED WORK', 47, 133, 19, '#737e88', 500)
-      print(c, 'No. 001', 1360, 130, 23, '#b85c83')
+      print(c, isMn ? 'ОЮУ' : 'OYU', 45, 79, 40, '#d9d8cd', 650)
+      print(c, isMn ? 'ДУГААР 001' : 'No. 001', 1360, 130, 23, '#b85c83')
     })
     const plate = screen(machine, 7.35, 0.84, -0.4, 0.25, 3.51, engraving)
     plate.rotation.x = -Math.PI / 2
@@ -621,7 +572,7 @@ function initMachineScene(
       new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(draftingPoints), lineMat)
     )
 
-    // The five stations mirror the portfolio sections: introduction, about, skills, projects and contact.
+    // Build the platform and the five portfolio stations.
     type StationDef = {
       id: StationId
       name: string
@@ -638,53 +589,53 @@ function initMachineScene(
       index: number
       anchor: THREE.Vector3
     }
-    const isMn = options.language === 'mn'
+
     const definitions: StationDef[] = [
       {
         id: 'engine',
         name: isMn ? 'Танилцуулга' : 'Introduction',
         step: 1,
-        output: isMn ? 'танилцуулга' : 'profile',
+        output: isMn ? 'профайл' : 'profile',
         pos: [-4.15, 0.29, -0.65],
-        desc: isMn ? 'Хувийн танилцуулга болон портфолионы эхлэл.' : 'A personal introduction and portfolio identity display.',
+        desc: isMn ? 'Балбаатар Оюугийн товч танилцуулга.' : 'Introduction to Balbaatar Oyu and her portfolio.'
       },
       {
         id: 'admin',
-        name: isMn ? 'Миний тухай' : 'About me',
+        name: isMn ? 'Боловсрол' : 'Education',
         step: 2,
-        output: isMn ? 'түүх' : 'story',
+        output: isMn ? 'боловсрол' : 'education',
         pos: [-1.65, 0.29, -2.03],
-        desc: isMn ? 'Мэдээллийн системийн оюутны сонирхол, суралцсан замнал.' : 'Information systems student, interests and learning journey.',
+        desc: isMn ? 'СЭЗИС-ийн оюутны боловсрол, мэдээлэл.' : 'Education and background at the University of Finance and Economics.'
       },
       {
         id: 'storefront',
         name: isMn ? 'Ур чадвар' : 'Skills',
         step: 3,
-        output: isMn ? 'хэрэгсэл' : 'toolkit',
+        output: isMn ? 'чадвар' : 'skills',
         pos: [1.5, 0.29, -2.08],
-        desc: isMn ? 'Вэб, сүлжээ, шинжилгээ болон чанарын удирдлагын чадвар.' : 'Web, networking, analysis and quality management skills.',
+        desc: isMn ? 'C, SQL, Java, Office, Figma болон VS Code.' : 'C, SQL, Java, office tools, Figma and VS Code.'
       },
       {
         id: 'cabinet',
-        name: isMn ? 'Бүтээлүүд' : 'Projects',
+        name: isMn ? 'Төслүүд' : 'Projects',
         step: 4,
-        output: isMn ? 'сонгосон бүтээл' : 'selected work',
+        output: isMn ? 'вэб төслүүд' : 'web projects',
         pos: [4.03, 0.29, 0.12],
-        desc: isMn ? 'Хичээлийн болон практик ажлуудын сонголт.' : 'Selected coursework and practical projects in one archive.',
+        desc: isMn ? 'Цахим дэлгүүр, МСМТ-ийн сайт, Star catcher.' : 'Furniture e-commerce, the UFE ISMD website and Star catcher.'
       },
       {
         id: 'cashdesk',
         name: isMn ? 'Холбоо барих' : 'Contact',
         step: 5,
-        output: isMn ? 'холбогдох' : 'connect',
+        output: isMn ? 'холбоо барих' : 'contact',
         pos: [0.93, 0.29, 1.85],
-        desc: isMn ? 'Төсөл, санаа болон хамтын ажиллагааны талаар холбогдоорой.' : 'Get in touch about projects, ideas and collaboration.',
+        desc: isMn ? 'И-мэйл, утас болон GitHub хаяг.' : 'Email, phone and GitHub contact details.'
       },
     ]
     const stations: Station[] = [],
       cutPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 10),
       shellMaterials: THREE.Material[] = []
-    function shell< T extends THREE.Material>(m: T): T {
+    function shell<T extends THREE.Material>(m: T): T {
       const s = m.clone() as T
       s.clippingPlanes = [cutPlane]
       s.clipShadows = true
@@ -790,7 +741,7 @@ function initMachineScene(
       c.ellipse(256, 258, 82, 57, 0, Math.PI, TAU)
       c.fill()
       print(c, isMn ? 'САЙН УУ, БИ' : 'HELLO, I AM', 154, 378, 20, '#9ca5a7', 500)
-      print(c, 'KOJI', 153, 432, 48, '#f4f1ea', 700)
+      print(c, isMn ? 'ОЮУ' : 'OYU', 153, 432, 48, '#f4f1ea', 700)
       print(c, isMn ? 'МЭДЭЭЛЛИЙН СИСТЕМ' : 'INFORMATION SYSTEMS', 154, 468, 15, '#f472b6', 600)
       c.fillStyle = '#30363f'
       c.fillRect(154, 505, 204, 3)
@@ -833,7 +784,7 @@ function initMachineScene(
         c.stroke()
       }
       print(c, isMn ? 'ПОРТФОЛИО' : 'PORTFOLIO', 28, 57, 24, '#242320', 650)
-      print(c, isMn ? 'KOJI / ПОРТФОЛИО' : 'BY KOJI.', 24, 103, 42, '#242320', 700)
+      print(c, isMn ? 'OYU / ПОРТФОЛИО' : 'BY OYU.', 24, 103, 42, '#242320', 700)
       c.fillStyle = '#171b20'
       c.beginPath()
       c.roundRect(25, 465, 334, 123, 12)
@@ -892,7 +843,7 @@ function initMachineScene(
       }
       c.fillStyle = '#30363f'
       c.fillRect(28, 270, 244, 32)
-      print(c, isMn ? 'ТУХАЙ / KOJI' : 'ABOUT / KOJI', 43, 292, 13, '#f4f1ea', 600)
+      print(c, isMn ? 'ТУХАЙ / OYU' : 'ABOUT / OYU', 43, 292, 13, '#f4f1ea', 600)
       c.fillStyle = '#ec4899'
       c.fillRect(342, 302, Math.max(16, ((t * 0.12) % 1) * 242), 4)
       queue.texture.needsUpdate = true
@@ -909,10 +860,10 @@ function initMachineScene(
     box(storefront, 1.82, 0.15, 1.2, 0, 0.39, 0, M.dark, 0.07)
     box(storefront, 1.62, 0.07, 1.04, 0, 0.49, 0, M.body, 0.035)
     const skillItems = [
-      { name: 'REACT', height: 0.82, material: M.amber, tag: 'UI' },
-      { name: 'JAVASCRIPT', height: 1.05, material: M.ivory, tag: 'JS' },
-      { name: 'NETWORKS', height: 1.25, material: M.body, tag: 'LAN' },
-      { name: 'QUALITY', height: 0.96, material: M.copper, tag: 'QA' },
+      { name: 'C / SQL', height: 0.82, material: M.amber, tag: 'SQL' },
+      { name: 'JAVA', height: 1.05, material: M.ivory, tag: 'JAVA' },
+      { name: 'EXCEL', height: 1.25, material: M.body, tag: 'DATA' },
+      { name: 'FIGMA', height: 0.96, material: M.copper, tag: 'UI' },
     ]
     skillItems.forEach((item, i) => {
       const x = -0.66 + i * 0.44
@@ -963,7 +914,7 @@ function initMachineScene(
       c.fillRect(40, 52, 140, 24)
       c.fillRect(40, 91, 107, 24)
       c.fillRect(40, 130, 158, 24)
-      print(c, 'SKILLS', 17, 225, 23, '#283030', 600)
+      print(c, isMn ? 'УР ЧАДВАР' : 'SKILLS', 17, 225, 23, '#283030', 600)
       c.fillStyle = '#b0b5b0'
       c.fillRect(17, 244, 153, 6)
       c.fillRect(17, 258, 104, 5)
@@ -975,8 +926,8 @@ function initMachineScene(
     box(cabinet, 1.82, 0.15, 1.18, 0, 0.39, 0, M.dark, 0.07)
     box(cabinet, 1.64, 0.07, 1.03, 0, 0.49, 0, M.body, 0.035)
     box(cabinet, 1.4, 0.06, 0.06, 0, 0.7, -0.42, M.chrome, 0.015)
-    const projectLabels = ['Shop.mn', 'Connected LAN', 'EventSnap']
-    const projectTypes = ['WEB / REACT', 'NETWORK / LAB', 'QUALITY / PLAN']
+    const projectLabels = isMn ? ['Тавилгын онлайн дэлгүүр', 'СЭЗИС МСМТ', 'Од баригч'] : ['e-commerce', 'UFE ISMD', 'Star catcher']
+    const projectTypes = isMn ? ['ТАВИЛГА / ВЭБ', 'ТЭНХИМ / ВЭБ', 'ТОГЛООМ / TYPESCRIPT'] : ['FURNITURE / WEB', 'DEPARTMENT / WEB', 'GAME / TYPESCRIPT']
     projectLabels.forEach((name, i) => {
       const panel = new THREE.Group()
       panel.position.set(-0.61 + i * 0.61, 0.55, -0.18)
@@ -989,7 +940,7 @@ function initMachineScene(
         c.fillRect(0, 0, w, h)
         c.fillStyle = ['#ec4899', '#c4c7b5', '#91a19b'][i]
         c.fillRect(0, 0, w, 14)
-        print(c, 'KOJI / WORKS', 18, 46, 15, '#a6afae', 500)
+        print(c, isMn ? 'ОЮУ / ТӨСЛҮҮД' : 'OYU / WORKS', 18, 46, 15, '#a6afae', 500)
         print(c, String(i + 1).padStart(2, '0'), 18, 102, 42, '#f472b6', 600)
         print(c, name, 18, 169, 22, '#f4f1ea', 650)
         print(c, projectTypes[i], 18, 205, 13, '#a6afae', 500)
@@ -999,7 +950,7 @@ function initMachineScene(
         c.fillRect(36, 263, 7, 70)
         c.fillStyle = '#73817f'
         for (let j = 0; j < 3; j++) c.fillRect(59, 265 + j * 22, 155 - j * 25, 5)
-        print(c, 'OPEN PROJECT', 18, 389, 13, '#f472b6', 600)
+        print(c, isMn ? 'ТӨСЛИЙГ ҮЗЭХ' : 'OPEN PROJECT', 18, 389, 13, '#f472b6', 600)
       })
       screen(panel, 0.45, 0.75, 0, 0.48, 0.087, cardTex)
       box(panel, 0.075, 0.62, 0.075, 0, 0.04, -0.02, M.chrome, 0.02)
@@ -1010,8 +961,8 @@ function initMachineScene(
       c.fillRect(0, 0, w, h)
       c.fillStyle = '#ec4899'
       c.fillRect(0, 0, 7, h)
-      print(c, isMn ? 'БҮТЭЭЛИЙН САН' : 'PROJECT ARCHIVE', 24, 59, 25, '#f4f1ea', 600)
-      print(c, isMn ? '3 СОНГОЛТ / ВЭБ / СҮЛЖЭЭ / ЧАНАР' : '3 SELECTED / WEB / NETWORKS / QUALITY', 24, 104, 15, '#9ca5a7')
+      print(c, isMn ? 'БҮТЭЭЛҮҮД' : 'PROJECT ARCHIVE', 24, 59, 25, '#f4f1ea', 600)
+      print(c, isMn ? '3 БҮТЭЭЛ / ТАВИЛГА / МСМТ / ТОГЛООМ' : '3 WEB PROJECTS / SHOP / ISMD / GAME', 24, 104, 15, '#9ca5a7')
       print(c, isMn ? 'ХИЧЭЭЛЭЭС ПРАКТИКТ' : 'COURSEWORK TO PRACTICE', 24, 148, 13, '#f472b6', 500)
     })
     box(cabinet, 1.48, 0.38, 0.07, 0, 0.78, 0.55, M.dark, 0.025)
@@ -1023,7 +974,7 @@ function initMachineScene(
     const nameTex = canvasTexture(432, 204, (c, w, h) => {
       c.fillStyle = '#ec4899'
       c.fillRect(0, 0, w, h)
-      print(c, isMn ? 'СОНГОСОН БҮТЭЭЛ' : 'SELECTED PROJECT', 28, 70, 24, '#2a2e26', 600)
+      print(c, isMn ? 'БҮТЭЭЛ' : 'SELECTED PROJECT', 28, 70, 24, '#2a2e26', 600)
       print(c, isMn ? 'ТӨСЛИЙН ДЭЛГЭРЭНГҮЙ' : 'OPEN A CASE STUDY', 28, 126, 19, '#5b4c22', 500)
       c.fillRect(28, 153, 165, 3)
     })
@@ -1044,7 +995,7 @@ function initMachineScene(
       c.fillRect(0, 0, 8, 176)
       print(c, isMn ? 'ХОЛБОГДЪЁ' : "LET'S CONNECT", 24, 48, 23, '#f472b6', 550)
       print(c, isMn ? 'ЗУРВАС ИЛГЭЭХ' : 'SEND A MESSAGE', 24, 111, 47, '#ecedc7', 600)
-      print(c, isMn ? 'ХОЛБОО / KOJI' : 'CONTACT / KOJI', 26, 150, 15, '#9cae91', 500)
+      print(c, isMn ? 'ХОЛБОО / OYU' : 'CONTACT / OYU', 26, 150, 15, '#9cae91', 500)
     }
     drawCash()
     screen(cashdesk, 0.94, 0.48, 0, 1.48, 0.339, cashTex)
@@ -1063,20 +1014,20 @@ function initMachineScene(
       c.fillRect(0, 0, w, h)
       c.fillStyle = '#ec4899'
       c.fillRect(0, 0, w, 12)
-      print(c, 'SAY HELLO', 22, 55, 23, '#333d36', 650)
-      print(c, 'KOJI', 22, 108, 34, '#333d36', 650)
-      print(c, 'Information systems', 22, 144, 15, '#687067')
+      print(c, isMn ? 'ХОЛБОО БАРИХ' : 'SAY HELLO', 22, 55, 23, '#333d36', 650)
+      print(c, isMn ? 'ОЮУ' : 'OYU', 22, 108, 34, '#333d36', 650)
+      print(c, isMn ? 'Мэдээллийн систем' : 'Information systems', 22, 144, 15, '#687067')
       c.strokeStyle = '#8a9189'
       c.setLineDash([5, 6])
       c.beginPath()
       c.moveTo(22, 174)
       c.lineTo(258, 174)
       c.stroke()
-      print(c, 'EMAIL / SOCIAL', 22, 224, 18, '#333d36', 600)
-      print(c, 'OPEN TO IDEAS', 22, 266, 18, '#333d36', 500)
+      print(c, isMn ? 'ИМЭЙЛ / ОЛОН НИЙТИЙН СҮЛЖЭЭ' : 'EMAIL / SOCIAL', 22, 224, 18, '#333d36', 600)
+      print(c, isMn ? 'САНАЛД НЭЭЛТТЭЙ' : 'OPEN TO IDEAS', 22, 266, 18, '#333d36', 500)
       c.fillStyle = '#333d36'
       for (let i = 0; i < 30; i++) c.fillRect(22 + i * 7, 298, 2 + (i % 3), 75)
-      print(c, 'KOJI / 2026', 73, 414, 15, '#59635b')
+      print(c, isMn ? 'ОЮУ / 2026' : 'OYU / 2026', 73, 414, 15, '#59635b')
     })
     const rp = screen(receipt, 0.45, 0.72, 0, 0, 0.031, receiptTex)
     rp.material.side = THREE.DoubleSide
@@ -1096,7 +1047,7 @@ function initMachineScene(
     })
     const ruble = screen(coin, 0.28, 0.28, 0, 0, 0.04, rubleTex)
     ruble.material.transparent = true
-    // Conveyor: a closed spline, instanced treads, continuous rails and phase-locked cargo.
+    // Build the conveyor, track rails, and moving display pieces.
     const path = new THREE.CatmullRomCurve3(
       [
         [-3.95, 0.84, 0.65],
@@ -1184,29 +1135,29 @@ function initMachineScene(
     const scriptTex = canvasTexture(256, 352, (c, w, h) => {
       c.fillStyle = '#eeeae0'
       c.fillRect(0, 0, w, h)
-      print(c, 'ABOUT ME', 24, 47, 22, '#3b403a', 650)
-      print(c, 'Information systems', 24, 85, 15, '#8b8d80')
+      print(c, isMn ? 'МИНИЙ ТУХАЙ' : 'ABOUT ME', 24, 47, 22, '#3b403a', 650)
+      print(c, isMn ? 'Мэдээллийн систем' : 'Information systems', 24, 85, 15, '#8b8d80')
       for (let i = 0; i < 9; i++) {
         c.fillStyle = i === 4 ? '#b85c83' : '#aeb2a5'
         c.fillRect(24, 111 + i * 21, 190 - (i % 3) * 24, 6)
       }
-      print(c, 'ABOUT / 02', 24, 327, 17, '#786124', 600)
+      print(c, isMn ? 'ТУХАЙ / 02' : 'ABOUT / 02', 24, 327, 17, '#786124', 600)
     })
     const orderCardTex = canvasTexture(256, 352, (c, w, h) => {
       c.fillStyle = '#b85c83'
       c.fillRect(0, 0, w, h)
-      print(c, 'HELLO', 21, 48, 24, '#30362d', 650)
-      print(c, 'KOJI', 21, 79, 24, '#30362d', 650)
+      print(c, isMn ? 'ТАНИЛЦУУЛГА' : 'HELLO', 21, 48, 24, '#30362d', 650)
+      print(c, isMn ? 'ОЮУ' : 'OYU', 21, 79, 24, '#30362d', 650)
       c.strokeStyle = '#716431'
       c.lineWidth = 2
       c.strokeRect(23, 112, 210, 139)
-      print(c, 'Koji', 42, 190, 37, '#30362d', 550)
-      print(c, 'INTRO / 01', 23, 320, 17, '#635728')
+      print(c, isMn ? 'Оюу' : 'Oyu', 42, 190, 37, '#30362d', 550)
+      print(c, isMn ? 'ТАНИЛЦУУЛГА / 01' : 'INTRO / 01', 23, 320, 17, '#635728')
     })
     const packetTextures = [orderCardTex, scriptTex, videoTexture, orderTex, receiptTex]
     const packets: Array<{
       group: THREE.Group
-      faces: THREE.Mesh< THREE.PlaneGeometry, THREE.MeshBasicMaterial>[]
+      faces: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>[]
       halo: THREE.Mesh
       stage: number
       phase: number
@@ -1262,9 +1213,9 @@ function initMachineScene(
     // Merge static geometry per parent/material. Moving assemblies remain separate.
     function compact(group: THREE.Object3D) {
       for (const child of [...group.children]) if ((child as THREE.Group).isGroup) compact(child)
-      const buckets = new Map< string, THREE.Mesh< THREE.BufferGeometry, THREE.Material>[]>()
+      const buckets = new Map<string, THREE.Mesh<THREE.BufferGeometry, THREE.Material>[]>()
       for (const object of group.children) {
-        const child = object as THREE.Mesh< THREE.BufferGeometry, THREE.Material> & {
+        const child = object as THREE.Mesh<THREE.BufferGeometry, THREE.Material> & {
           isInstancedMesh?: boolean
         }
         if (
@@ -1307,7 +1258,7 @@ function initMachineScene(
     )
     const pickables = stations.map((s) => s.group)
 
-    let mode: MachineMode = 'assembled',
+    let mode: MachineMode = 'stations',
       cameraMode: MachineCamera = 'overview',
       playing = !reduceMotion,
       simTime = 0,
@@ -1324,6 +1275,7 @@ function initMachineScene(
       downX = 0,
       downY = 0
     let cameraAnimating = true,
+      tourTravel: { start: number; end: number; elapsed: number; duration: number } | null = null,
       flightTime = 0,
       lastDraw = -1,
       visible = true,
@@ -1334,7 +1286,8 @@ function initMachineScene(
     let baseDistance = 25,
       sized = false,
       readySent = false
-    // A zero-size embed (an iframe inside a collapsed panel) used to send the camera to infinity: aspect 0
+    // Set up camera targets and wait for a measurable scene box before rendering.
+    // A zero-size embed (such as a collapsed panel) used to send the camera to infinity: aspect 0
     // put NaN into the uniforms and left the scene black for good. Wait for a real size; the first real
     // size places the camera at once, without a fly-in.
     function layoutCamera() {
@@ -1392,16 +1345,37 @@ function initMachineScene(
         else desiredPosition.copy(viewDirection).multiplyScalar(distance).add(desiredTarget)
       }
     }
+    function closestConveyorProgress(position: THREE.Vector3) {
+      let closestProgress = 0
+      let closestDistance = Infinity
+      const sampleCount = 500
+      const sample = new THREE.Vector3()
+
+      for (let index = 0; index < sampleCount; index += 1) {
+        const progress = index / sampleCount
+        path.getPointAt(progress, sample)
+        const dx = sample.x - position.x
+        const dz = sample.z - position.z
+        const distance = dx * dx + dz * dz
+
+        if (distance < closestDistance) {
+          closestDistance = distance
+          closestProgress = progress
+        }
+      }
+
+      return closestProgress
+    }
     function syncButtons() {
       root
-        .querySelectorAll< HTMLElement>('[data-mode]')
+        .querySelectorAll<HTMLElement>('[data-mode]')
         .forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)))
       root
-        .querySelectorAll< HTMLElement>('[data-camera]')
+        .querySelectorAll<HTMLElement>('[data-camera]')
         .forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.camera === cameraMode)))
       $('journey').classList.toggle('visible', mode === 'order')
     }
-    const modeAliases: Record< string, MachineMode> = {
+    const modeAliases: Record<string, MachineMode> = {
       Assembled: 'assembled',
       Cutaway: 'cutaway',
       Stations: 'stations',
@@ -1411,7 +1385,7 @@ function initMachineScene(
       stations: 'stations',
       order: 'order',
     }
-    const cameraAliases: Record< string, MachineCamera> = {
+    const cameraAliases: Record<string, MachineCamera> = {
       Overview: 'overview',
       Side: 'side',
       Top: 'top',
@@ -1442,6 +1416,7 @@ function initMachineScene(
     function focusStation(id: string) {
       const s = stations.find((s) => s.id === id)
       if (!s) return false
+      tourTravel = null
       selected = id
       if (mode === 'order') mode = 'assembled'
       cameraMode = 'station'
@@ -1451,8 +1426,31 @@ function initMachineScene(
       syncButtons()
       return true
     }
+    function travelToStation(id: string) {
+      const destination = stations.find((station) => station.id === id)
+      const current = stations.find((station) => station.id === selected)
+      if (!destination || !current) return false
+
+      const start = closestConveyorProgress(current.group.position)
+      let end = closestConveyorProgress(destination.group.position)
+      if (end <= start) end += 1
+
+      selected = id
+      mode = 'stations'
+      cameraMode = 'station'
+      lastInteraction = performance.now()
+      tourTravel = { start, end, elapsed: 0, duration: 1.8 }
+
+      path.getPointAt(start, desiredTarget)
+      desiredTarget.y += 1.25
+      desiredPosition.copy(desiredTarget).addScaledVector(viewDirection, mobile ? 9 : 12)
+      cameraAnimating = true
+      syncButtons()
+      return true
+    }
     function setCamera(name: string) {
       if (!Object.hasOwn(cameraAliases, name)) return false
+      tourTravel = null
       const next = cameraAliases[name]
       cameraMode = next
       if (mode === 'order') mode = 'assembled'
@@ -1465,13 +1463,13 @@ function initMachineScene(
     }
     function syncPlayback() {
       const b = $('play')
-      b.setAttribute('aria-label', playing ? 'Pause the animation' : 'Resume the animation')
+      b.setAttribute('aria-label', isMn ? (playing ? 'Хөдөлгөөнийг түр зогсоох' : 'Хөдөлгөөнийг үргэлжлүүлэх') : (playing ? 'Pause the animation' : 'Resume the animation'))
       b.setAttribute('aria-pressed', String(!playing))
       b.innerHTML = playing
         ? '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><rect x="2" y="1" width="2.5" height="10" rx=".5"/><rect x="7.5" y="1" width="2.5" height="10" rx=".5"/></svg>'
         : '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1l8 5-8 5z"/></svg>'
       $('status').classList.toggle('paused', !playing)
-      $('status-text').textContent = playing ? 'Portfolio running' : 'Portfolio paused'
+      $('status-text').textContent = isMn ? (playing ? 'Танилцуулга ажиллаж байна' : 'Танилцуулга түр зогссон') : (playing ? 'Portfolio running' : 'Portfolio paused')
     }
     function play() {
       playing = true
@@ -1483,17 +1481,20 @@ function initMachineScene(
       syncPlayback()
       return true
     }
-    const api: MachineApi = { setMode, focusStation, setCamera, play, pause }
+    const api: MachineApi = { setMode, focusStation, travelToStation, setCamera, play, pause }
     window.__machine = api
     cleanups.push(() => {
       if (window.__machine === api) delete window.__machine
     })
     root
-      .querySelectorAll< HTMLElement>('[data-mode]')
-      .forEach((b) => listen(b, 'click', () => setMode(b.dataset.mode ?? '')))
+      .querySelectorAll<HTMLElement>('[data-mode]')
+      .forEach((button) => listen(button, 'click', () => setMode(button.dataset.mode ?? '')))
     root
-      .querySelectorAll< HTMLElement>('[data-camera]')
-      .forEach((b) => listen(b, 'click', () => setCamera(b.dataset.camera ?? '')))
+      .querySelectorAll<HTMLElement>('[data-tour-start]')
+      .forEach((button) => listen(button, 'click', () => options.onTourStart?.()))
+    root
+      .querySelectorAll<HTMLElement>('[data-camera]')
+      .forEach((button) => listen(button, 'click', () => setCamera(button.dataset.camera ?? '')))
     listen($('play'), 'click', () => (playing ? pause() : play()))
     syncPlayback()
     layoutCamera()
@@ -1723,6 +1724,21 @@ function initMachineScene(
           )
           .add(desiredTarget)
         cameraAnimating = true
+      } else if (tourTravel && cameraMode === 'station' && !dragging) {
+        tourTravel.elapsed += dt
+        const progress = Math.min(tourTravel.elapsed / tourTravel.duration, 1)
+        const easedProgress = progress * progress * (3 - 2 * progress)
+        const routeProgress = (tourTravel.start + (tourTravel.end - tourTravel.start) * easedProgress) % 1
+
+        path.getPointAt(routeProgress, desiredTarget)
+        desiredTarget.y += 1.25
+        desiredPosition.copy(desiredTarget).addScaledVector(viewDirection, mobile ? 9 : 12)
+        cameraAnimating = true
+
+        if (progress === 1) {
+          tourTravel = null
+          setCameraGoal()
+        }
       } else if (cameraMode === 'station' && cameraAnimating) setCameraGoal()
       if (cameraAnimating && !dragging) {
         const speed = 1 - Math.exp(-dt * (mode === 'order' ? 2.2 : 3))
@@ -1803,7 +1819,7 @@ function initMachineScene(
       cancelAnimationFrame(rafId)
       controls.dispose()
       // Free every GPU resource the scene created, then the context itself.
-      const textures = new Set< THREE.Texture>()
+      const textures = new Set<THREE.Texture>()
       scene.traverse((object) => {
         const mesh = object as THREE.Mesh
         if (mesh.geometry) mesh.geometry.dispose()
@@ -1829,7 +1845,7 @@ function initMachineScene(
 
     $('loading').classList.add('done')
     $('error').style.display = 'none'
-    // Lightweight inspection for integration and automated browser checks; no production UI.
+    // Public scene API, playback controls, and cleanup.
     Object.defineProperty(window, '__machineDebug', {
       value: {
         getState: () => ({
@@ -1866,831 +1882,4 @@ function initMachineScene(
   }
   return dispose
 }
-
-// ---------------------------------------------------------------------------
-// Styles: app/globals.css of the template, scoped to .agentic-factory-3d.
-// ---------------------------------------------------------------------------
-
-const STYLES = String.raw`
-.agentic-factory-3d {
-  width: 100%;
-  contain: layout;
-}
-.agentic-factory-3d {
-  color-scheme: dark;
-  --bg: #000000;
-  --white: #f4f1ea;
-  --amber: #ec4899;
-  --muted: #81848b;
-  --line: rgba(244, 241, 234, 0.11);
-}
-.agentic-factory-3d, .agentic-factory-3d * {
-  box-sizing: border-box;
-}
-.agentic-factory-3d {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: var(--bg);
-}
-.agentic-factory-3d {
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
-  color: var(--white);
-  font-size: 13px;
-  -webkit-font-smoothing: antialiased;
-}
-.agentic-factory-3d {
-  position: relative;
-  overflow: hidden;
-}
-.agentic-factory-3d button,
-.agentic-factory-3d a {
-  -webkit-tap-highlight-color: transparent;
-}
-.agentic-factory-3d button {
-  font: inherit;
-  color: inherit;
-  cursor: pointer;
-}
-.agentic-factory-3d button:focus-visible,
-.agentic-factory-3d a:focus-visible {
-  outline: 2px solid var(--amber);
-  outline-offset: 5px;
-}
-.agentic-factory-3d #scene {
-  position: absolute;
-  inset: 0;
-  touch-action: none;
-  outline: none;
-}
-.agentic-factory-3d #scene canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-.agentic-factory-3d .vignette {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse at 50% 48%,
-    transparent 30%,
-    rgba(0, 0, 0, 0.12) 64%,
-    rgba(0, 0, 0, 0.65) 100%
-  );
-}
-.agentic-factory-3d .topbar {
-  position: absolute;
-  inset: 28px 32px auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  pointer-events: none;
-}
-.agentic-factory-3d .identity {
-  display: flex;
-  gap: 13px;
-  align-items: center;
-}
-.agentic-factory-3d .mark {
-  width: 30px;
-  height: 30px;
-  border: 1px solid #55502f;
-  border-radius: 9px;
-  display: grid;
-  place-items: center;
-  color: var(--amber);
-  background: #1c1b14;
-}
-.agentic-factory-3d .identity strong {
-  display: block;
-  font-weight: 550;
-  letter-spacing: -0.2px;
-  font-size: 13px;
-}
-.agentic-factory-3d .identity small {
-  display: block;
-  margin-top: 5px;
-  font-size: 9px;
-  letter-spacing: 1.55px;
-  color: #73777f;
-  text-transform: uppercase;
-}
-.agentic-factory-3d .portfolio-nav {
-  display: flex;
-  align-items: center;
-  gap: clamp(12px, 1.8vw, 27px);
-  pointer-events: auto;
-  color: #a6a79f;
-  font-size: 10px;
-  white-space: nowrap;
-}
-.agentic-factory-3d .portfolio-nav a { transition: color .2s ease; }
-.agentic-factory-3d .portfolio-nav a:hover { color: #f4f1ea; }
-.agentic-factory-3d .portfolio-nav .cv-download {
-  border: 1px solid #ec4899;
-  border-radius: 3px;
-  padding: 8px 10px;
-  color: #f472b6;
-}
-.agentic-factory-3d .portfolio-nav .cv-download:hover { background: #ec4899; color: #111; }
-.agentic-factory-3d .status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 10px;
-  letter-spacing: 0.1px;
-  color: #a6a79f;
-}
-.agentic-factory-3d .status i {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--amber);
-  box-shadow: 0 0 10px #ec489960;
-}
-.agentic-factory-3d .status.paused i {
-  background: #777;
-  box-shadow: none;
-}
-.agentic-factory-3d .status span:last-child {
-  font-variant-numeric: tabular-nums;
-  color: #646971;
-  margin-left: 12px;
-}
-.agentic-factory-3d .scene-heading {
-  position: absolute;
-  top: 110px;
-  left: 24%;
-  right: 24%;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 9px;
-  letter-spacing: 1.8px;
-  color: #959790;
-  text-transform: uppercase;
-}
-.agentic-factory-3d .scene-heading:before {
-  content: '';
-  width: 22px;
-  height: 1px;
-  background: var(--amber);
-}
-.agentic-factory-3d .scene-heading .index {
-  margin-left: auto;
-  color: #4e535b;
-  font-size: 9px;
-  letter-spacing: 1px;
-}
-.agentic-factory-3d .coordinates {
-  position: absolute;
-  top: 150px;
-  right: 33px;
-  color: #52575f;
-  writing-mode: vertical-rl;
-  font:
-    9px ui-monospace,
-    Menlo,
-    SFMono-Regular,
-    monospace;
-  letter-spacing: 1.5px;
-  pointer-events: none;
-}
-.agentic-factory-3d .controls {
-  position: absolute;
-  bottom: 79px;
-  left: 26px;
-  right: 26px;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 16px;
-  z-index: 5;
-}
-.agentic-factory-3d .mode-bar {
-  display: flex;
-  gap: 3px;
-  align-items: center;
-  padding: 5px;
-  border: 1px solid #ffffff13;
-  border-radius: 12px;
-  background: rgba(25, 28, 32, 0.87);
-  box-shadow:
-    0 8px 30px #0003,
-    inset 0 1px 0 #ffffff03;
-  backdrop-filter: blur(16px);
-}
-.agentic-factory-3d .mode-bar button {
-  border: 0;
-  background: none;
-  color: #a2a4a8;
-  white-space: nowrap;
-  padding: 11px 15px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  font-size: 11px;
-  font-weight: 500;
-  border-radius: 8px;
-  transition:
-    background 0.2s,
-    color 0.2s;
-}
-.agentic-factory-3d .mode-bar button:hover {
-  background: #ffffff08;
-  color: var(--white);
-}
-.agentic-factory-3d .mode-bar button[aria-pressed='true'] {
-  background: var(--amber);
-  color: #211c0d;
-  box-shadow: 0 2px 12px #ec489912;
-}
-.agentic-factory-3d svg {
-  flex-shrink: 0;
-  display: block;
-}
-.agentic-factory-3d .mode-bar svg {
-  width: 14px;
-  height: 14px;
-}
-.agentic-factory-3d .camera-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
-.agentic-factory-3d .camera-row .caption {
-  font-size: 9px;
-  letter-spacing: 1.4px;
-  color: #555b65;
-  margin-right: 9px;
-}
-.agentic-factory-3d .camera-row button {
-  border: 0;
-  background: transparent;
-  color: #6e747e;
-  padding: 5px 9px;
-  font-size: 10px;
-  transition: color 0.2s;
-}
-.agentic-factory-3d .camera-row button:hover,
-.agentic-factory-3d .camera-row button[aria-pressed='true'] {
-  color: var(--white);
-}
-.agentic-factory-3d .camera-row button[aria-pressed='true']:after {
-  content: '';
-  display: block;
-  width: 3px;
-  height: 3px;
-  background: var(--amber);
-  border-radius: 50%;
-  margin: 5px auto -8px;
-}
-.agentic-factory-3d .camera-row .divider {
-  width: 1px;
-  height: 13px;
-  background: var(--line);
-  margin: 0 8px;
-}
-.agentic-factory-3d .camera-row #play {
-  padding: 5px;
-  width: 25px;
-  height: 25px;
-  display: grid;
-  place-items: center;
-}
-.agentic-factory-3d .footer {
-  position: absolute;
-  bottom: 25px;
-  left: 32px;
-  right: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  pointer-events: none;
-}
-.agentic-factory-3d .wordmark {
-  font-size: 11px;
-  letter-spacing: -0.1px;
-  color: #6d7178;
-  text-decoration: none;
-  pointer-events: auto;
-}
-.agentic-factory-3d .wordmark span {
-  color: #a1a49f;
-}
-.agentic-factory-3d .hint {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: #636972;
-  font-size: 10px;
-}
-.agentic-factory-3d .hint svg {
-  color: #8c8f91;
-}
-.agentic-factory-3d .footer-center {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  font:
-    9px ui-monospace,
-    Menlo,
-    SFMono-Regular,
-    monospace;
-  letter-spacing: 1.5px;
-  color: #3f454d;
-}
-.agentic-factory-3d #labels {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-.agentic-factory-3d .station-label {
-  position: absolute;
-  left: 0;
-  top: 0;
-  opacity: 0;
-  transition: opacity 0.3s;
-  will-change: transform;
-  pointer-events: none;
-  min-width: 138px;
-}
-.agentic-factory-3d .station-label.visible {
-  opacity: 1;
-}
-.agentic-factory-3d .station-label .stem {
-  height: 26px;
-  width: 1px;
-  background: linear-gradient(#ec489900, #ec489970);
-  margin: 0 0 0 10px;
-}
-.agentic-factory-3d .station-label .label-card {
-  background: #14171bee;
-  backdrop-filter: blur(10px);
-  border: 1px solid #ec489940;
-  border-radius: 6px;
-  padding: 10px 13px;
-  box-shadow: 0 4px 20px #0003;
-}
-.agentic-factory-3d .station-label .label-title {
-  font-weight: 550;
-  font-size: 12px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  white-space: nowrap;
-}
-.agentic-factory-3d .station-label .label-title span {
-  color: var(--amber);
-  font:
-    9px ui-monospace,
-    Menlo,
-    monospace;
-}
-.agentic-factory-3d .station-label .label-meta {
-  font-size: 9px;
-  color: #8e939c;
-  margin: 6px 0 0 24px;
-  white-space: nowrap;
-}
-.agentic-factory-3d #tooltip {
-  position: absolute;
-  pointer-events: none;
-  z-index: 10;
-  opacity: 0;
-  transition: opacity 0.15s;
-  padding: 11px 14px;
-  border: 1px solid #ffffff1a;
-  background: #171a20ed;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px #0005;
-  border-radius: 7px;
-  max-width: 240px;
-}
-.agentic-factory-3d #tooltip.visible {
-  opacity: 1;
-}
-.agentic-factory-3d #tooltip strong {
-  font-size: 12px;
-  font-weight: 550;
-}
-.agentic-factory-3d #tooltip strong span {
-  font-size: 10px;
-  color: var(--amber);
-  margin-right: 8px;
-}
-.agentic-factory-3d #tooltip p {
-  font-size: 10px;
-  color: #9b9fa7;
-  margin: 6px 0 0;
-  line-height: 1.5;
-}
-.agentic-factory-3d #journey {
-  position: absolute;
-  left: 24%;
-  right: 24%;
-  top: 148px;
-  opacity: 0;
-  transform: translateY(-5px);
-  transition: 0.4s;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  gap: 13px;
-}
-.agentic-factory-3d #journey.visible {
-  opacity: 1;
-  transform: none;
-}
-.agentic-factory-3d .journey-icon {
-  width: 28px;
-  height: 28px;
-  border: 1px solid #ec489940;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  color: var(--amber);
-}
-.agentic-factory-3d #journey strong {
-  font-size: 11px;
-  font-weight: 500;
-}
-.agentic-factory-3d #journey small {
-  display: block;
-  font-size: 9px;
-  margin-top: 4px;
-  color: #7e858d;
-}
-.agentic-factory-3d #journey .track {
-  height: 2px;
-  background: #ffffff0b;
-  flex: 1;
-  margin-left: 8px;
-}
-.agentic-factory-3d #journey .track i {
-  display: block;
-  height: 100%;
-  background: var(--amber);
-  width: 0;
-}
-.agentic-factory-3d #loading {
-  position: absolute;
-  left: 50%;
-  top: 48%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: #8c8f95;
-  font-size: 11px;
-  transition: opacity 0.4s;
-  z-index: 20;
-}
-.agentic-factory-3d #loading i {
-  height: 18px;
-  width: 18px;
-  border-radius: 50%;
-  border: 1px solid #ec489922;
-  border-top-color: var(--amber);
-  animation: agentic-factory-3d-spin 1s linear infinite;
-}
-@keyframes agentic-factory-3d-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.agentic-factory-3d #loading.done {
-  opacity: 0;
-  pointer-events: none;
-}
-.agentic-factory-3d #error {
-  position: absolute;
-  left: 27.5%;
-  right: 27.5%;
-  top: 40%;
-  border: 1px solid #ec489930;
-  background: #191b1f;
-  padding: 24px;
-  border-radius: 12px;
-  display: none;
-  font-size: 13px;
-  line-height: 1.7;
-}
-.agentic-factory-3d #error strong {
-  color: var(--amber);
-  font-weight: 500;
-}
-.agentic-factory-3d #error p {
-  color: #9da1a8;
-  margin: 8px 0 0;
-}
-.agentic-factory-3d #error button {
-  border: 1px solid #ffffff22;
-  background: #25292e;
-  padding: 8px 14px;
-  border-radius: 5px;
-  margin-top: 14px;
-}
-.agentic-factory-3d.embed .debug-ui {
-  display: none !important;
-}
-.agentic-factory-3d.embed .vignette {
-  background: radial-gradient(
-    ellipse at 71% 48%,
-    transparent 30%,
-    rgba(0, 0, 0, 0.1) 65%,
-    rgba(0, 0, 0, 0.55)
-  );
-}
-.agentic-factory-3d.embed .footer {
-  justify-content: flex-end;
-}
-.agentic-factory-3d.embed .wordmark {
-  opacity: 0.65;
-}
-@media (min-width: 901px) {
-.agentic-factory-3d.embed #loading {
-    left: 71%;
-  }
-.agentic-factory-3d.embed #error {
-    left: 48%;
-    right: 7%;
-  }
-}
-@media (min-width: 1600px) {
-.agentic-factory-3d .topbar {
-    inset: 38px 46px auto;
-  }
-.agentic-factory-3d .scene-heading {
-    top: 142px;
-  }
-.agentic-factory-3d .controls {
-    bottom: 100px;
-    gap: 20px;
-  }
-.agentic-factory-3d .mode-bar button {
-    padding: 13px 20px;
-    font-size: 12px;
-  }
-.agentic-factory-3d .camera-row button {
-    font-size: 11px;
-    padding: 5px 12px;
-  }
-.agentic-factory-3d .footer {
-    bottom: 35px;
-    left: 46px;
-    right: 46px;
-  }
-.agentic-factory-3d #journey {
-    top: 182px;
-  }
-.agentic-factory-3d .coordinates {
-    right: 47px;
-    top: 185px;
-  }
-}
-@media (max-width: 900px) {
-.agentic-factory-3d .portfolio-nav {
-    position: absolute;
-    top: 62px;
-    left: 0;
-    right: 0;
-    max-width: 100%;
-    justify-content: flex-start;
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding: 0 2px;
-    gap: 14px;
-    font-size: 9px;
-  }
-.agentic-factory-3d .portfolio-nav::-webkit-scrollbar { display: none; }
-.agentic-factory-3d .portfolio-nav .cv-download { padding: 6px 8px; }
-.agentic-factory-3d .topbar {
-    inset: 24px 22px auto;
-  }
-.agentic-factory-3d .identity strong {
-    font-size: 12px;
-  }
-.agentic-factory-3d .identity small {
-    font-size: 8px;
-    letter-spacing: 1.1px;
-  }
-.agentic-factory-3d .status {
-    font-size: 9px;
-  }
-.agentic-factory-3d .status span:last-child {
-    display: none;
-  }
-.agentic-factory-3d .scene-heading {
-    left: 22px;
-    right: 22px;
-    top: 105px;
-    font-size: 8px;
-    letter-spacing: 1.3px;
-  }
-.agentic-factory-3d .coordinates {
-    display: none;
-  }
-.agentic-factory-3d .controls {
-    left: 12px;
-    right: 12px;
-    bottom: 84px;
-    gap: 18px;
-  }
-.agentic-factory-3d .mode-bar {
-    gap: 1px;
-    padding: 4px;
-    border-radius: 10px;
-  }
-.agentic-factory-3d .mode-bar button {
-    padding: 11px 10px;
-    font-size: 10px;
-    gap: 6px;
-  }
-.agentic-factory-3d .mode-bar svg {
-    width: 12px;
-    height: 12px;
-  }
-.agentic-factory-3d .camera-row {
-    gap: 0;
-  }
-.agentic-factory-3d .camera-row .caption {
-    font-size: 8px;
-    margin-right: 6px;
-  }
-.agentic-factory-3d .camera-row button {
-    padding: 5px 8px;
-    font-size: 9px;
-  }
-.agentic-factory-3d .camera-row .divider {
-    margin: 0 5px;
-  }
-.agentic-factory-3d .footer {
-    bottom: 25px;
-    left: 22px;
-    right: 22px;
-    align-items: flex-end;
-  }
-.agentic-factory-3d .hint {
-    font-size: 9px;
-    max-width: 175px;
-    line-height: 1.6;
-  }
-.agentic-factory-3d .footer-center {
-    display: none;
-  }
-.agentic-factory-3d .vignette {
-    background: radial-gradient(ellipse at 50% 47%, transparent 20%, #00000080 100%);
-  }
-.agentic-factory-3d #loading {
-    left: 50%;
-  }
-.agentic-factory-3d #error {
-    left: 7%;
-    right: 7%;
-    top: 35%;
-  }
-.agentic-factory-3d #journey {
-    left: 24px;
-    right: 24px;
-    top: 143px;
-  }
-.agentic-factory-3d .station-label {
-    min-width: 100px;
-  }
-.agentic-factory-3d .station-label .label-card {
-    padding: 7px 9px;
-  }
-.agentic-factory-3d .station-label .label-title {
-    font-size: 10px;
-    gap: 7px;
-  }
-.agentic-factory-3d .station-label .label-meta {
-    font-size: 8px;
-    margin-left: 0;
-  }
-.agentic-factory-3d .station-label .stem {
-    height: 17px;
-  }
-.agentic-factory-3d.embed .vignette {
-    background: radial-gradient(ellipse at center, transparent 30%, #00000060 100%);
-  }
-}
-@media (max-width: 360px) {
-.agentic-factory-3d .mode-bar button {
-    padding: 10px 7px;
-  }
-.agentic-factory-3d .mode-bar svg {
-    display: none;
-  }
-.agentic-factory-3d .camera-row .caption {
-    display: none;
-  }
-.agentic-factory-3d .status {
-    display: none;
-  }
-}
-@media (max-height: 570px) {
-.agentic-factory-3d .topbar {
-    top: 16px;
-  }
-.agentic-factory-3d .scene-heading {
-    top: 70px;
-  }
-.agentic-factory-3d .controls {
-    bottom: 50px;
-    gap: 8px;
-  }
-.agentic-factory-3d .footer {
-    bottom: 14px;
-  }
-.agentic-factory-3d #journey {
-    top: 96px;
-  }
-.agentic-factory-3d .mode-bar button {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-.agentic-factory-3d, .agentic-factory-3d * {
-    transition: none !important;
-  }
-.agentic-factory-3d #loading i {
-    animation: none;
-  }
-}
-.portfolio-app[data-theme="light"] .agentic-factory-3d {
-  color-scheme: light;
-  --bg: #f7f4f8;
-  --white: #26202a;
-  --muted: #716976;
-  --line: rgba(38, 32, 42, 0.17);
-  background: var(--bg);
-}
-.portfolio-app[data-theme="light"] .agentic-factory-3d .vignette {
-  background: radial-gradient(ellipse at 50% 48%, transparent 48%, rgba(73, 49, 77, 0.025) 100%);
-}
-.portfolio-app[data-theme="light"] .agentic-factory-3d .topbar,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .scene-heading,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .coordinates,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .footer,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .hint,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .camera-row,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .status {
-  color: #625968;
-}
-.portfolio-app[data-theme="light"] .agentic-factory-3d .identity small,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .scene-heading .index,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .status span:last-child,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .coordinates {
-  color: #817887;
-}
-.portfolio-app[data-theme="light"] .agentic-factory-3d .portfolio-nav { color: #544b59; }
-.portfolio-app[data-theme="light"] .agentic-factory-3d .portfolio-nav a:hover { color: #be185d; }
-.portfolio-app[data-theme="light"] .agentic-factory-3d .mark { background: #fff; border-color: rgba(190,24,93,.35); }
-.portfolio-app[data-theme="light"] .agentic-factory-3d .mode-bar {
-  border-color: rgba(38,32,42,.14);
-  background: rgba(255,255,255,.94);
-  box-shadow: 0 12px 35px rgba(45,25,48,.12);
-}
-.portfolio-app[data-theme="light"] .agentic-factory-3d .mode-bar button,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .view-bar button { color: #716976; }
-.portfolio-app[data-theme="light"] .agentic-factory-3d .mode-bar button:hover { color: #26202a; }
-.portfolio-app[data-theme="light"] .agentic-factory-3d .mode-bar button.active { color: #fff; }
-.portfolio-app[data-theme="light"] .agentic-factory-3d .view-bar button.active,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .view-bar button:hover { color: #26202a; }
-.portfolio-app[data-theme="light"] .agentic-factory-3d #journey,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .label-card,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .factory-info-card,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .factory-order-note {
-  color: #26202a;
-  background: rgba(255,255,255,.95);
-  border-color: rgba(38,32,42,.16);
-}
-.portfolio-app[data-theme="light"] .agentic-factory-3d .factory-info-card p,
-.portfolio-app[data-theme="light"] .agentic-factory-3d .factory-order-note { color: #625968; }
-`
-
-
-
-
-
-
-
-
-
-
-
 
