@@ -395,7 +395,6 @@ function App() {
               <div className="project-detail-copy">
                 <p className="eyebrow">{selected.category} <span>·</span> {selected.type}</p>
                 <h2 id="modal-title">{selected.title}</h2>
-                <p className="project-detail-summary">{selected.detail || selected.description}</p>
                 <div className="project-detail-section">
                   <p className="project-detail-label">{language === 'mn' ? 'ТӨСЛИЙН ТОВЧ ТАНИЛЦУУЛГА' : 'PROJECT OVERVIEW'}</p>
                   <p>{selected.overview || selected.description}</p>
